@@ -7,14 +7,20 @@ Talks to your existing backend at:
 https://loan-management-backend-adb5.onrender.com/api/v1
 ```
 
-## Phase 1 (this drop) includes
+## Phase 1 includes
 
 - Project scaffold (Expo + React Native Paper + React Navigation)
 - Secure token storage (`expo-secure-store`)
 - API client with automatic 401 → refresh-token → retry, same logic as the web app
 - Login, Register
 - Bottom-tab shell: Dashboard, Borrowers, Loans, Payments, More (profile + logout)
-- Everything except Auth and the tab shell is a placeholder — real screens land in Phases 2-6 (see each screen for its phase label)
+
+## Phase 2 (this drop) adds
+
+- **Dashboard**: live summary stat cards (active loans, borrowers, outstanding principal, overdue, today's/monthly collection, pending/overdue interest), loan status distribution, overdue loans list, recent payments, top borrowers — pull-to-refresh, tap-through to a borrower
+- **Borrowers**: searchable/filterable list (active/inactive/all) with pagination, pending-interest badges, add/edit form matching every field your backend accepts, full details screen (contact info, interest summary, guarantor, linked loans), deactivate (admin only)
+
+Loans, Payments, Documents, Reports/Analytics are still placeholders — see each screen for its phase label.
 
 ## 1. Install dependencies
 
@@ -98,8 +104,8 @@ src/
 | Phase | Status | Scope |
 |---|---|---|
 | 1 | ✅ Done | Setup, auth, navigation shell |
-| 2 | Next | Dashboard + Borrowers |
-| 3 |  | Loans |
+| 2 | ✅ Done | Dashboard + Borrowers |
+| 3 | Next | Loans |
 | 4 |  | Payments |
 | 5 |  | Documents |
 | 6 |  | Reports & Analytics |

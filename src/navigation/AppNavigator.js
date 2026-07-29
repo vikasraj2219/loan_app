@@ -1,7 +1,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import DashboardScreen from '../screens/dashboard/DashboardScreen';
-import BorrowersScreen from '../screens/borrowers/BorrowersScreen';
+import BorrowersStackNavigator from './BorrowersStackNavigator';
 import LoansScreen from '../screens/loans/LoansScreen';
 import PaymentsScreen from '../screens/payments/PaymentsScreen';
 import SettingsScreen from '../screens/settings/SettingsScreen';
@@ -30,7 +30,7 @@ export default function AppNavigator() {
       })}
     >
       <Tab.Screen name="Dashboard" component={DashboardScreen} />
-      <Tab.Screen name="Borrowers" component={BorrowersScreen} />
+      <Tab.Screen name="Borrowers" component={BorrowersStackNavigator} options={{ headerShown: false }} />
       <Tab.Screen name="Loans" component={LoansScreen} />
       <Tab.Screen name="Payments" component={PaymentsScreen} />
       <Tab.Screen name="More" component={SettingsScreen} />

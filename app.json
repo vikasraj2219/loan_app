@@ -8,29 +8,14 @@
     "splash": {
       "backgroundColor": "#1E3A5F"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "android": {
       "package": "com.loanmanager.app",
-      "permissions": [
-        "CAMERA",
-        "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE"
-      ]
+      "permissions": ["CAMERA", "READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"]
     },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.loanmanager.app"
-    },
-    "extra": {
-      "eas": {
-        "projectId": "97e06bed-1edd-44cd-846d-ab064a7e9bad"
-      }
-    },
-    "plugins": [
-      "expo-secure-store",
-      "expo-status-bar"
-    ]
+    }
   }
 }
