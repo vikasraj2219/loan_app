@@ -1,0 +1,39 @@
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import DashboardScreen from '../screens/dashboard/DashboardScreen';
+import BorrowersScreen from '../screens/borrowers/BorrowersScreen';
+import LoansScreen from '../screens/loans/LoansScreen';
+import PaymentsScreen from '../screens/payments/PaymentsScreen';
+import SettingsScreen from '../screens/settings/SettingsScreen';
+
+const Tab = createBottomTabNavigator();
+
+const ICONS = {
+  Dashboard: 'view-dashboard-outline',
+  Borrowers: 'account-group-outline',
+  Loans: 'cash-multiple',
+  Payments: 'credit-card-outline',
+  More: 'dots-horizontal-circle-outline',
+};
+
+export default function AppNavigator() {
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ color, size }) => (
+          <MaterialCommunityIcons name={ICONS[route.name]} color={color} size={size} />
+        ),
+        tabBarActiveTintColor: '#1E3A5F',
+        headerStyle: { backgroundColor: '#1E3A5F' },
+        headerTintColor: '#fff',
+        headerTitleStyle: { fontWeight: '600' },
+      })}
+    >
+      <Tab.Screen name="Dashboard" component={DashboardScreen} />
+      <Tab.Screen name="Borrowers" component={BorrowersScreen} />
+      <Tab.Screen name="Loans" component={LoansScreen} />
+      <Tab.Screen name="Payments" component={PaymentsScreen} />
+      <Tab.Screen name="More" component={SettingsScreen} />
+    </Tab.Navigator>
+  );
+}
