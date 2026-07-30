@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
-import { View, StyleSheet, ScrollView, RefreshControl, Linking } from 'react-native';
-import { Text, Card, Divider, ActivityIndicator, IconButton, Menu, Chip } from 'react-native-paper';
+import { View, StyleSheet, ScrollView, RefreshControl, Linking, Pressable } from 'react-native';
+import { Text, Card, Divider, ActivityIndicator, IconButton, Menu } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { borrowerApi } from '../../api/borrowerApi';
@@ -216,16 +216,38 @@ export default function BorrowerDetailsScreen({ route, navigation }) {
 
         <Card style={[styles.section, styles.lastSection]} mode="outlined">
           <Card.Content>
-            <Text variant="titleMedium" style={styles.sectionTitle}>
-              Loans
-            </Text>
+            <View style={styles.loansHeaderRow}>
+              <Text variant="titleMedium" style={styles.sectionTitle}>
+                Loans
+              </Text>
+              {borrower.status === 'active' && (
+                <IconButton
+                  icon="plus-circle-outline"
+                  size={22}
+                  onPress={() =>
+                    navigation.navigate('Loans', {
+                      screen: 'LoanForm',
+                      params: { selectedBorrowerId: borrower._id, selectedBorrowerName: borrower.name },
+                    })
+                  }
+                />
+              )}
+            </View>
             {!borrower.loans || borrower.loans.length === 0 ? (
-              <EmptyState icon="cash-multiple" title="No loans yet" description="Loans management arrives in Phase 3." />
+              <EmptyState icon="cash-multiple" title="No loans yet" description="Tap + above to create one." />
             ) : (
               borrower.loans.map((loan, idx) => (
                 <View key={loan._id}>
                   {idx > 0 && <Divider />}
-                  <View style={styles.loanRow}>
+                  <Pressable
+                    style={styles.loanRow}
+                    onPress={() =>
+                      navigation.navigate('Loans', {
+                        screen: 'LoanDetails',
+                        params: { id: loan._id, borrowerName: borrower.name },
+                      })
+                    }
+                  >
                     <View style={styles.loanRowText}>
                       <Text variant="bodyMedium" style={styles.rowTitle}>
                         {formatCurrency(loan.loanAmount)}
@@ -235,7 +257,7 @@ export default function BorrowerDetailsScreen({ route, navigation }) {
                       </Text>
                     </View>
                     <StatusChip status={loan.status} />
-                  </View>
+                  </Pressable>
                 </View>
               ))
             )}
@@ -259,6 +281,7 @@ const styles = StyleSheet.create({
   section: { marginBottom: 16 },
   lastSection: { marginBottom: 0 },
   sectionTitle: { fontWeight: '600', marginBottom: 12 },
+  loansHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   summaryGrid: { flexDirection: 'row', flexWrap: 'wrap' },
   summaryItem: { width: '50%', marginBottom: 12 },
   summaryLabel: { color: '#6B7280', marginBottom: 2 },

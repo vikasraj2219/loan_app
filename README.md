@@ -22,6 +22,11 @@ https://loan-management-backend-adb5.onrender.com/api/v1
 
 Loans, Payments, Documents, Reports/Analytics are still placeholders — see each screen for its phase label.
 
+## Phase 3 (this drop) adds
+
+- **Loans**: list with status filter (Active/Overdue/Closed/All) and pagination; create a loan (pick an active borrower, amount, monthly rate, dates); details screen (principal outstanding, this month's interest, pending/total outstanding, payment history); Close Loan (once principal is fully repaid) and Mark Overdue (admin) actions; edit (rate/tenure/due date/notes — matches your backend's rule that principal only changes via payments); full month-by-month interest schedule
+- Borrower Details now deep-links into real loan details, and has a **+** to start a new loan for that borrower
+
 ## 1. Install dependencies
 
 You'll need [Node.js](https://nodejs.org) (18+) and the Expo CLI (no global install needed — `npx` handles it).
@@ -105,8 +110,8 @@ src/
 |---|---|---|
 | 1 | ✅ Done | Setup, auth, navigation shell |
 | 2 | ✅ Done | Dashboard + Borrowers |
-| 3 | Next | Loans |
-| 4 |  | Payments |
+| 3 | ✅ Done | Loans |
+| 4 | Next | Payments |
 | 5 |  | Documents |
 | 6 |  | Reports & Analytics |
 | 7 |  | Polish + final APK build |
