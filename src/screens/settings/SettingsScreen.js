@@ -3,7 +3,7 @@ import { Avatar, Text, List, Button, Divider } from 'react-native-paper';
 import { useAuth } from '../../context/AuthContext';
 import PlaceholderNotice from '../../components/PlaceholderNotice';
 
-export default function SettingsScreen() {
+export default function SettingsScreen({ navigation }) {
   const { user, logout } = useAuth();
   const initials = (user?.name || '?')
     .split(' ')
@@ -31,6 +31,14 @@ export default function SettingsScreen() {
 
       <Divider style={styles.divider} />
 
+      <List.Item
+        title="Documents"
+        description="Upload, browse, and archive KYC and loan paperwork"
+        left={(props) => <List.Icon {...props} icon="file-document-multiple-outline" />}
+        right={(props) => <List.Icon {...props} icon="chevron-right" />}
+        onPress={() => navigation.navigate('Documents')}
+      />
+      <Divider />
       <List.Item title="Change Password" left={(props) => <List.Icon {...props} icon="lock-outline" />} disabled />
 
       <PlaceholderNotice

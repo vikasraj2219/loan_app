@@ -130,6 +130,20 @@ export default function LoanDetailsScreen({ route, navigation }) {
                     navigation.navigate('InterestSchedule', { id, borrowerName: loan.borrower?.name });
                   }}
                 />
+                <Menu.Item
+                  leadingIcon="file-document-multiple-outline"
+                  title="Documents"
+                  onPress={() => {
+                    setMenuVisible(false);
+                    navigation.navigate('More', {
+                      screen: 'Documents',
+                      params: {
+                        screen: 'DocumentUpload',
+                        params: { ownerType: 'loan', ownerId: id, ownerName: `${loan.borrower?.name} loan` },
+                      },
+                    });
+                  }}
+                />
                 {loan.status !== 'closed' && (
                   <Menu.Item
                     leadingIcon="cash-plus"

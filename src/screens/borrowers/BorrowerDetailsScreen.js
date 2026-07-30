@@ -96,6 +96,20 @@ export default function BorrowerDetailsScreen({ route, navigation }) {
                     navigation.navigate('BorrowerForm', { id });
                   }}
                 />
+                <Menu.Item
+                  leadingIcon="file-document-multiple-outline"
+                  title="Documents"
+                  onPress={() => {
+                    setMenuVisible(false);
+                    navigation.navigate('More', {
+                      screen: 'Documents',
+                      params: {
+                        screen: 'DocumentUpload',
+                        params: { ownerType: 'borrower', ownerId: id, ownerName: borrower.name },
+                      },
+                    });
+                  }}
+                />
                 {isAdmin && borrower.status === 'active' && (
                   <Menu.Item leadingIcon="account-off-outline" title="Deactivate" onPress={handleDeactivate} />
                 )}

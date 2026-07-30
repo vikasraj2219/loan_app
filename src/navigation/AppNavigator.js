@@ -4,7 +4,7 @@ import DashboardScreen from '../screens/dashboard/DashboardScreen';
 import BorrowersStackNavigator from './BorrowersStackNavigator';
 import LoansStackNavigator from './LoansStackNavigator';
 import PaymentsStackNavigator from './PaymentsStackNavigator';
-import SettingsScreen from '../screens/settings/SettingsScreen';
+import MoreStackNavigator from './MoreStackNavigator';
 
 const Tab = createBottomTabNavigator();
 
@@ -33,7 +33,7 @@ export default function AppNavigator() {
       <Tab.Screen name="Borrowers" component={BorrowersStackNavigator} options={{ headerShown: false }} />
       <Tab.Screen name="Loans" component={LoansStackNavigator} options={{ headerShown: false }} />
       <Tab.Screen name="Payments" component={PaymentsStackNavigator} options={{ headerShown: false }} />
-      <Tab.Screen name="More" component={SettingsScreen} />
+      <Tab.Screen name="More" component={MoreStackNavigator} options={{ headerShown: false }} />
     </Tab.Navigator>
   );
 }

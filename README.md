@@ -35,7 +35,13 @@ Loans, Payments, Documents, Reports/Analytics are still placeholders — see eac
 
 **New native dependency**: `expo-image-picker` (for the receipt camera/gallery picker) — this is the one addition since Phase 1. Run `npx expo install --fix` again after pulling this update, since a new native module needs to be linked. If you hit another Gradle error, run `npx expo-doctor` first and share the output.
 
-Documents and Reports/Analytics are still placeholders.
+## Phase 5 (this drop) adds
+
+- **Documents**, reached via **More → Documents** (kept off the bottom tab bar to avoid crowding it): global searchable list with Active/Archived/All filter, upload flow (pick Borrower or Loan → category from your backend's suggested list → optional name/description → photo), details view with image preview / "Open" for other file types, Archive/Restore, and admin-only permanent delete
+- Borrower Details and Loan Details now have a **Documents** shortcut that jumps straight into an upload pre-scoped to that borrower/loan
+- **Scope note:** mobile document uploads are photos only (camera/gallery) — no PDF picker was added, to avoid another native dependency. Use the web dashboard for PDF uploads. Bulk multi-select actions (available on web) were also left out of this phase to keep the mobile flow simple — single-document actions cover the common case.
+
+Reports & Analytics is still a placeholder.
 
 ## 1. Install dependencies
 
@@ -122,6 +128,6 @@ src/
 | 2 | ✅ Done | Dashboard + Borrowers |
 | 3 | ✅ Done | Loans |
 | 4 | ✅ Done | Payments |
-| 5 | Next | Documents |
-| 6 |  | Reports & Analytics |
+| 5 | ✅ Done | Documents |
+| 6 | Next | Reports & Analytics |
 | 7 |  | Polish + final APK build |
