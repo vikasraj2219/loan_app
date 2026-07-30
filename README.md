@@ -27,6 +27,16 @@ Loans, Payments, Documents, Reports/Analytics are still placeholders — see eac
 - **Loans**: list with status filter (Active/Overdue/Closed/All) and pagination; create a loan (pick an active borrower, amount, monthly rate, dates); details screen (principal outstanding, this month's interest, pending/total outstanding, payment history); Close Loan (once principal is fully repaid) and Mark Overdue (admin) actions; edit (rate/tenure/due date/notes — matches your backend's rule that principal only changes via payments); full month-by-month interest schedule
 - Borrower Details now deep-links into real loan details, and has a **+** to start a new loan for that borrower
 
+## Phase 4 (this drop) adds
+
+- **Payments**: list of recent payments with mode filter (Cash/UPI/Bank/All); record a payment by picking a borrower → an open loan (only shows loans that can still accept a payment) → amount(s) + mode + reference/remarks; attach a receipt photo (camera or gallery) at recording time or afterwards
+- Payment details: full breakdown, receipt preview with "open full size", admin-only **Edit** (re-runs the same FIFO interest allocation your backend uses) and **Delete** (reverses the loan/interest effects, with a confirmation dialog since it's irreversible)
+- Loan Details now has a **Record Payment** shortcut that jumps straight into the payment form for that loan
+
+**New native dependency**: `expo-image-picker` (for the receipt camera/gallery picker) — this is the one addition since Phase 1. Run `npx expo install --fix` again after pulling this update, since a new native module needs to be linked. If you hit another Gradle error, run `npx expo-doctor` first and share the output.
+
+Documents and Reports/Analytics are still placeholders.
+
 ## 1. Install dependencies
 
 You'll need [Node.js](https://nodejs.org) (18+) and the Expo CLI (no global install needed — `npx` handles it).
@@ -111,7 +121,7 @@ src/
 | 1 | ✅ Done | Setup, auth, navigation shell |
 | 2 | ✅ Done | Dashboard + Borrowers |
 | 3 | ✅ Done | Loans |
-| 4 | Next | Payments |
-| 5 |  | Documents |
+| 4 | ✅ Done | Payments |
+| 5 | Next | Documents |
 | 6 |  | Reports & Analytics |
 | 7 |  | Polish + final APK build |

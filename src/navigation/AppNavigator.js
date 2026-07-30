@@ -3,7 +3,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import DashboardScreen from '../screens/dashboard/DashboardScreen';
 import BorrowersStackNavigator from './BorrowersStackNavigator';
 import LoansStackNavigator from './LoansStackNavigator';
-import PaymentsScreen from '../screens/payments/PaymentsScreen';
+import PaymentsStackNavigator from './PaymentsStackNavigator';
 import SettingsScreen from '../screens/settings/SettingsScreen';
 
 const Tab = createBottomTabNavigator();
@@ -32,7 +32,7 @@ export default function AppNavigator() {
       <Tab.Screen name="Dashboard" component={DashboardScreen} />
       <Tab.Screen name="Borrowers" component={BorrowersStackNavigator} options={{ headerShown: false }} />
       <Tab.Screen name="Loans" component={LoansStackNavigator} options={{ headerShown: false }} />
-      <Tab.Screen name="Payments" component={PaymentsScreen} />
+      <Tab.Screen name="Payments" component={PaymentsStackNavigator} options={{ headerShown: false }} />
       <Tab.Screen name="More" component={SettingsScreen} />
     </Tab.Navigator>
   );

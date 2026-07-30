@@ -130,6 +130,23 @@ export default function LoanDetailsScreen({ route, navigation }) {
                     navigation.navigate('InterestSchedule', { id, borrowerName: loan.borrower?.name });
                   }}
                 />
+                {loan.status !== 'closed' && (
+                  <Menu.Item
+                    leadingIcon="cash-plus"
+                    title="Record Payment"
+                    onPress={() => {
+                      setMenuVisible(false);
+                      navigation.navigate('Payments', {
+                        screen: 'PaymentForm',
+                        params: {
+                          loanId: id,
+                          borrowerName: loan.borrower?.name,
+                          principalOutstanding: loan.principalOutstanding,
+                        },
+                      });
+                    }}
+                  />
+                )}
                 {loan.status !== 'closed' && loan.principalOutstanding === 0 && (
                   <Menu.Item leadingIcon="check-circle-outline" title="Close Loan" onPress={handleClose} />
                 )}
