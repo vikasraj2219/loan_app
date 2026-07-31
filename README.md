@@ -41,7 +41,14 @@ Loans, Payments, Documents, Reports/Analytics are still placeholders — see eac
 - Borrower Details and Loan Details now have a **Documents** shortcut that jumps straight into an upload pre-scoped to that borrower/loan
 - **Scope note:** mobile document uploads are photos only (camera/gallery) — no PDF picker was added, to avoid another native dependency. Use the web dashboard for PDF uploads. Bulk multi-select actions (available on web) were also left out of this phase to keep the mobile flow simple — single-document actions cover the common case.
 
-Reports & Analytics is still a placeholder.
+## Phase 6 (this drop, final phase) adds
+
+- **Reports & Analytics**, under **More → Reports & Analytics**: Collection Report (date range, summary cards, payment list, export to CSV/Excel/PDF), Pending Interest (by-borrower breakdown, CSV export), Overdue Interest (days-overdue list), and Interest Collection History (generated vs. collected, 3/6/12-month toggle)
+- Exports save to the device and open the native share sheet (AirDrop, email, "Save to Files", WhatsApp, etc.) rather than downloading silently — this is the standard mobile pattern for a file coming from an API
+
+**New native dependencies**: `expo-file-system` and `expo-sharing` (both needed to save an exported report to disk and hand it to the share sheet). Run `npx expo install --fix` again after pulling this update.
+
+This completes all 6 phases. See "Building a real APK" below for the EAS build steps, and re-run `npx expo-doctor` before your next build since three native modules have been added since Phase 1.
 
 ## 1. Install dependencies
 
@@ -129,5 +136,5 @@ src/
 | 3 | ✅ Done | Loans |
 | 4 | ✅ Done | Payments |
 | 5 | ✅ Done | Documents |
-| 6 | Next | Reports & Analytics |
+| 6 | ✅ Done | Reports & Analytics |
 | 7 |  | Polish + final APK build |

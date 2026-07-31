@@ -1,7 +1,6 @@
 import { View, StyleSheet } from 'react-native';
 import { Avatar, Text, List, Button, Divider } from 'react-native-paper';
 import { useAuth } from '../../context/AuthContext';
-import PlaceholderNotice from '../../components/PlaceholderNotice';
 
 export default function SettingsScreen({ navigation }) {
   const { user, logout } = useAuth();
@@ -39,13 +38,15 @@ export default function SettingsScreen({ navigation }) {
         onPress={() => navigation.navigate('Documents')}
       />
       <Divider />
-      <List.Item title="Change Password" left={(props) => <List.Icon {...props} icon="lock-outline" />} disabled />
-
-      <PlaceholderNotice
+      <List.Item
         title="Reports & Analytics"
-        phase="Phase 6"
-        description="Collections report, pending/overdue interest, and export tools will live here."
+        description="Collections, pending/overdue interest, exports"
+        left={(props) => <List.Icon {...props} icon="chart-box-outline" />}
+        right={(props) => <List.Icon {...props} icon="chevron-right" />}
+        onPress={() => navigation.navigate('Reports')}
       />
+      <Divider />
+      <List.Item title="Change Password" left={(props) => <List.Icon {...props} icon="lock-outline" />} disabled />
 
       <Button mode="outlined" onPress={logout} style={styles.logoutButton} textColor="#B3261E">
         Log Out
