@@ -4,13 +4,20 @@
     "slug": "loan-management-app",
     "version": "1.0.0",
     "orientation": "portrait",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
       "backgroundColor": "#1E3A5F"
     },
     "assetBundlePatterns": ["**/*"],
     "android": {
       "package": "com.loanmanager.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1E3A5F"
+      },
       "permissions": ["CAMERA", "READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"]
     },
     "ios": {
@@ -20,6 +27,9 @@
         "NSCameraUsageDescription": "Used to photograph payment receipts.",
         "NSPhotoLibraryUsageDescription": "Used to attach payment receipt images."
       }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
     }
   }
 }

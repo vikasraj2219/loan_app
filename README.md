@@ -48,7 +48,13 @@ Loans, Payments, Documents, Reports/Analytics are still placeholders — see eac
 
 **New native dependencies**: `expo-file-system` and `expo-sharing` (both needed to save an exported report to disk and hand it to the share sheet). Run `npx expo install --fix` again after pulling this update.
 
-This completes all 6 phases. See "Building a real APK" below for the EAS build steps, and re-run `npx expo-doctor` before your next build since three native modules have been added since Phase 1.
+This completes all 6 feature phases.
+
+## Phase 7 (this drop, final) — polish
+
+- Real app icon, Android adaptive icon, and splash screen (simple navy/green "LM" monogram) — no more default Expo icon
+- `eas.json` is now included with a `preview` profile pre-configured for `"buildType": "apk"`, so `eas build:configure` isn't needed — go straight to the build command below
+- Full pass through every screen/navigator for stray imports, missing exports, and structural issues — everything checked out clean
 
 ## 1. Install dependencies
 
@@ -90,27 +96,22 @@ Expo Go is great for development, but to get an `.apk` you can install like a no
 ```bash
 npm install -g eas-cli
 eas login
-eas build:configure
 ```
 
-This generates an `eas.json`. Then run a **preview** build (produces an installable `.apk` rather than the Play-Store-only `.aab`):
+`eas.json` is already set up in this project with a `preview` profile that produces an installable `.apk` (rather than the Play-Store-only `.aab`), so you can skip `eas build:configure` and go straight to:
 
 ```bash
 eas build --platform android --profile preview
 ```
 
-If `eas.json` doesn't already have a `preview` profile with `"buildType": "apk"`, add this:
+Since three native modules (`expo-image-picker`, `expo-file-system`, `expo-sharing`) have been added since Phase 1, run this first if you haven't recently:
 
-```json
-{
-  "build": {
-    "preview": {
-      "distribution": "internal",
-      "android": { "buildType": "apk" }
-    }
-  }
-}
+```bash
+npx expo install --fix
+npx expo-doctor
 ```
+
+Fix anything `expo-doctor` flags before building — it's much faster to catch a version mismatch locally than after a 10+ minute cloud build fails.
 
 The build runs on Expo's servers (free tier: a limited number of builds/month). When it finishes, EAS gives you a download link — open it on your Android phone (or download and transfer the `.apk`) and install it directly (you'll need to allow "install from unknown sources" once).
 
@@ -137,4 +138,4 @@ src/
 | 4 | ✅ Done | Payments |
 | 5 | ✅ Done | Documents |
 | 6 | ✅ Done | Reports & Analytics |
-| 7 |  | Polish + final APK build |
+| 7 | ✅ Done | Polish + final APK build |
