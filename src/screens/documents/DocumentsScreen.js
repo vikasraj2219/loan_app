@@ -91,7 +91,7 @@ export default function DocumentsScreen({ navigation }) {
       </View>
 
       {loading ? (
-        <ActivityIndicator style={styles.loader} size="large" color="#1E3A5F" />
+        <ActivityIndicator style={styles.loader} size="large" color="#4338CA" />
       ) : error && documents.length === 0 ? (
         <ErrorState message={error} onRetry={() => fetchDocuments({ pageToLoad: 1 })} />
       ) : (
@@ -103,7 +103,7 @@ export default function DocumentsScreen({ navigation }) {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={() => fetchDocuments({ pageToLoad: 1, isRefresh: true })}
-              colors={['#1E3A5F']}
+              colors={['#4338CA']}
             />
           }
           onEndReachedThreshold={0.4}
@@ -116,7 +116,7 @@ export default function DocumentsScreen({ navigation }) {
               description={debouncedSearch ? 'Try a different search term.' : 'Upload a document to get started.'}
             />
           }
-          ListFooterComponent={loadingMore ? <ActivityIndicator style={styles.footerLoader} color="#1E3A5F" /> : null}
+          ListFooterComponent={loadingMore ? <ActivityIndicator style={styles.footerLoader} color="#4338CA" /> : null}
           renderItem={({ item }) => (
             <MobileRecordCard
               title={item.documentName}
@@ -149,5 +149,5 @@ const styles = StyleSheet.create({
   footerLoader: { marginVertical: 16 },
   listContent: { flexGrow: 1, paddingBottom: 96 },
   fileIcon: { marginRight: 4 },
-  fab: { position: 'absolute', right: 16, bottom: 16, backgroundColor: '#1E3A5F' },
+  fab: { position: 'absolute', right: 16, bottom: 16, backgroundColor: '#4338CA' },
 });

@@ -47,7 +47,7 @@ export default function InterestScheduleScreen({ route }) {
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#1E3A5F" />
+        <ActivityIndicator size="large" color="#4338CA" />
       </View>
     );
   }
@@ -60,7 +60,7 @@ export default function InterestScheduleScreen({ route }) {
     <ScrollView
       style={styles.flex}
       contentContainerStyle={styles.content}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} colors={['#1E3A5F']} />}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} colors={['#4338CA']} />}
     >
       {summary && (
         <Card style={styles.summaryCard} mode="elevated">
@@ -78,7 +78,7 @@ export default function InterestScheduleScreen({ route }) {
                 <Text variant="bodySmall" style={styles.summaryLabel}>
                   Pending Amount
                 </Text>
-                <Text variant="titleLarge" style={[styles.summaryValue, { color: '#B08900' }]}>
+                <Text variant="titleLarge" style={[styles.summaryValue, { color: '#B45309' }]}>
                   {formatCurrency(summary.pendingInterestAmount)}
                 </Text>
               </View>
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
   summaryRow: { flexDirection: 'row' },
   summaryItem: { flex: 1 },
   summaryLabel: { color: '#6B7280', marginBottom: 2 },
-  summaryValue: { fontWeight: '700', color: '#1E3A5F' },
+  summaryValue: { fontWeight: '700', color: '#4338CA' },
   summaryDivider: { marginVertical: 12 },
   listCard: {},
   sectionTitle: { fontWeight: '600', marginBottom: 12 },
@@ -160,5 +160,5 @@ const styles = StyleSheet.create({
   monthRowRight: { alignItems: 'flex-end', gap: 4 },
   rowTitle: { fontWeight: '600' },
   rowSubtitle: { color: '#6B7280', marginTop: 2 },
-  rowAmount: { fontWeight: '700', color: '#1E3A5F' },
+  rowAmount: { fontWeight: '700', color: '#4338CA' },
 });

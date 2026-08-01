@@ -85,7 +85,7 @@ export default function PaymentEditScreen({ route, navigation }) {
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#1E3A5F" />
+        <ActivityIndicator size="large" color="#4338CA" />
       </View>
     );
   }

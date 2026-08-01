@@ -1,22 +1,27 @@
 import { MD3LightTheme } from 'react-native-paper';
+import { colors, statusPalette } from './tokens';
 
 export const theme = {
   ...MD3LightTheme,
+  roundness: 12,
   colors: {
     ...MD3LightTheme.colors,
-    primary: '#1E3A5F',
-    secondary: '#2E7D5B',
-    error: '#B3261E',
-    background: '#F5F7FA',
+    primary: colors.indigo,
+    onPrimary: colors.white,
+    primaryContainer: colors.indigoSurface,
+    secondary: colors.teal,
+    secondaryContainer: colors.tealSurface,
+    error: colors.coral,
+    errorContainer: colors.coralSurface,
+    background: colors.background,
+    surface: colors.surface,
+    surfaceVariant: colors.surfaceAlt,
+    outline: colors.border,
+    onSurface: colors.ink,
+    onSurfaceVariant: colors.inkMuted,
   },
 };
 
-export const statusColors = {
-  active: '#2E7D5B',
-  closed: '#6B7280',
-  overdue: '#B3261E',
-  pending: '#B08900',
-  partially_paid: '#B08900',
-  paid: '#2E7D5B',
-  inactive: '#6B7280',
-};
+// Legacy alias — kept so screens not yet migrated to <StatusBadge> (which
+// reads statusPalette directly) keep working during the incremental redesign.
+export const statusColors = Object.fromEntries(Object.entries(statusPalette).map(([k, v]) => [k, v.fg]));

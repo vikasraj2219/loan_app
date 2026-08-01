@@ -6,7 +6,7 @@ import BorrowerFormScreen from '../screens/borrowers/BorrowerFormScreen';
 const Stack = createNativeStackNavigator();
 
 const headerOptions = {
-  headerStyle: { backgroundColor: '#1E3A5F' },
+  headerStyle: { backgroundColor: '#12153A' },
   headerTintColor: '#fff',
   headerTitleStyle: { fontWeight: '600' },
 };

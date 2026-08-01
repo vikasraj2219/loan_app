@@ -69,19 +69,19 @@ export default function CollectionsReportScreen() {
       <DateRangeFilter dateFrom={dateFrom} dateTo={dateTo} onChangeFrom={setDateFrom} onChangeTo={setDateTo} onApply={() => load()} />
 
       {loading ? (
-        <ActivityIndicator style={styles.loader} size="large" color="#1E3A5F" />
+        <ActivityIndicator style={styles.loader} size="large" color="#4338CA" />
       ) : error && !summary ? (
         <ErrorState message={error} onRetry={() => load()} />
       ) : (
         <ScrollView
           contentContainerStyle={styles.content}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} colors={['#1E3A5F']} />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} colors={['#4338CA']} />}
         >
           <View style={styles.statsRow}>
             <SummaryCard label="Payments" value={String(summary.paymentCount)} />
             <SummaryCard label="Principal" value={formatCurrency(summary.totalPrincipal)} />
             <SummaryCard label="Interest" value={formatCurrency(summary.totalInterest)} />
-            <SummaryCard label="Total" value={formatCurrency(summary.totalCollected)} color="#1E3A5F" />
+            <SummaryCard label="Total" value={formatCurrency(summary.totalCollected)} color="#4338CA" />
           </View>
 
           <View style={styles.exportRow}>
@@ -183,12 +183,12 @@ const styles = StyleSheet.create({
   summaryValue: { fontWeight: '700' },
   summaryLabel: { color: '#6B7280', marginTop: 2 },
   exportRow: { flexDirection: 'row', gap: 8, marginBottom: 4 },
-  exportButton: { flex: 1, borderColor: '#1E3A5F' },
+  exportButton: { flex: 1, borderColor: '#4338CA' },
   listCard: { marginTop: 12 },
   sectionTitle: { fontWeight: '600', marginBottom: 12 },
   paymentRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 10 },
   paymentRowText: { flex: 1 },
   rowTitle: { fontWeight: '600' },
   rowSubtitle: { color: '#6B7280', marginTop: 2 },
-  rowAmount: { fontWeight: '700', color: '#2E7D5B' },
+  rowAmount: { fontWeight: '700', color: '#0D9488' },
 });

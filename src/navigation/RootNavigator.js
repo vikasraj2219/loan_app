@@ -8,7 +8,7 @@ import AppNavigator from './AppNavigator';
 function SplashLoading() {
   return (
     <View style={styles.splash}>
-      <ActivityIndicator size="large" color="#1E3A5F" />
+      <ActivityIndicator size="large" color="#4338CA" />
       <Text style={styles.splashText}>Loading Loan Manager…</Text>
     </View>
   );

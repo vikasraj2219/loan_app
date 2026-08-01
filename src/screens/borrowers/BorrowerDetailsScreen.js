@@ -59,7 +59,7 @@ export default function BorrowerDetailsScreen({ route, navigation }) {
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#1E3A5F" />
+        <ActivityIndicator size="large" color="#4338CA" />
       </View>
     );
   }
@@ -72,7 +72,7 @@ export default function BorrowerDetailsScreen({ route, navigation }) {
     <View style={styles.flex}>
       <ScrollView
         contentContainerStyle={styles.content}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => loadBorrower(true)} colors={['#1E3A5F']} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => loadBorrower(true)} colors={['#4338CA']} />}
       >
         <Card style={styles.headerCard} mode="elevated">
           <Card.Content>
@@ -164,7 +164,7 @@ export default function BorrowerDetailsScreen({ route, navigation }) {
                   <Text variant="bodySmall" style={styles.summaryLabel}>
                     Pending Amount
                   </Text>
-                  <Text variant="titleMedium" style={[styles.summaryValue, { color: '#B08900' }]}>
+                  <Text variant="titleMedium" style={[styles.summaryValue, { color: '#B45309' }]}>
                     {formatCurrency(interestSummary.pendingInterestAmount)}
                   </Text>
                 </View>
@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
   headerCard: { marginBottom: 16 },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   headerText: { flex: 1, gap: 6 },
-  name: { fontWeight: '700', color: '#1E3A5F' },
+  name: { fontWeight: '700', color: '#4338CA' },
   contactRow: { flexDirection: 'row', alignItems: 'center', marginTop: 8, gap: 8 },
   contactText: { color: '#3A4453' },
   section: { marginBottom: 16 },
@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
   summaryGrid: { flexDirection: 'row', flexWrap: 'wrap' },
   summaryItem: { width: '50%', marginBottom: 12 },
   summaryLabel: { color: '#6B7280', marginBottom: 2 },
-  summaryValue: { fontWeight: '700', color: '#1E3A5F' },
+  summaryValue: { fontWeight: '700', color: '#4338CA' },
   detailRow: { marginBottom: 10 },
   detailLabel: { color: '#6B7280', marginBottom: 2 },
   loanRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 10 },

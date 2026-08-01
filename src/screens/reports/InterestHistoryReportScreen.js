@@ -56,17 +56,17 @@ export default function InterestHistoryReportScreen() {
       </View>
 
       {loading ? (
-        <ActivityIndicator style={styles.loader} size="large" color="#1E3A5F" />
+        <ActivityIndicator style={styles.loader} size="large" color="#4338CA" />
       ) : error && series.length === 0 ? (
         <ErrorState message={error} onRetry={() => load()} />
       ) : (
         <ScrollView
           contentContainerStyle={styles.content}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} colors={['#1E3A5F']} />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} colors={['#4338CA']} />}
         >
           <View style={styles.legendRow}>
-            <LegendDot color="#1E3A5F" label="Generated" />
-            <LegendDot color="#2E7D5B" label="Collected" />
+            <LegendDot color="#4338CA" label="Generated" />
+            <LegendDot color="#0D9488" label="Collected" />
           </View>
 
           {series.length === 0 ? (
@@ -78,8 +78,8 @@ export default function InterestHistoryReportScreen() {
                   <Text variant="titleSmall" style={styles.monthLabel}>
                     {s.label} {s.year}
                   </Text>
-                  <BarRow label="Generated" value={s.generated} max={maxValue} color="#1E3A5F" />
-                  <BarRow label="Collected" value={s.collected} max={maxValue} color="#2E7D5B" />
+                  <BarRow label="Generated" value={s.generated} max={maxValue} color="#4338CA" />
+                  <BarRow label="Collected" value={s.collected} max={maxValue} color="#0D9488" />
                 </Card.Content>
               </Card>
             ))
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
   legendDot: { width: 10, height: 10, borderRadius: 5 },
   legendLabel: { color: '#6B7280' },
   monthCard: { marginBottom: 12 },
-  monthLabel: { fontWeight: '700', color: '#1E3A5F', marginBottom: 10 },
+  monthLabel: { fontWeight: '700', color: '#4338CA', marginBottom: 10 },
   barRow: { marginBottom: 10 },
   barLabelRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 },
   barLabel: { color: '#6B7280' },

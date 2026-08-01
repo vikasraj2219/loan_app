@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   container: { flexGrow: 1, justifyContent: 'center', padding: 24 },
   header: { marginBottom: 32, alignItems: 'center' },
-  title: { fontWeight: '700', color: '#1E3A5F' },
+  title: { fontWeight: '700', color: '#4338CA' },
   subtitle: { marginTop: 4, color: '#6B7280', textAlign: 'center' },
   input: { marginBottom: 12 },
   button: { marginTop: 8, paddingVertical: 4 },

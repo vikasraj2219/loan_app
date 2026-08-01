@@ -40,7 +40,7 @@ export default function OverdueInterestReportScreen() {
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#1E3A5F" />
+        <ActivityIndicator size="large" color="#4338CA" />
       </View>
     );
   }
@@ -53,7 +53,7 @@ export default function OverdueInterestReportScreen() {
     <ScrollView
       style={styles.flex}
       contentContainerStyle={styles.content}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} colors={['#1E3A5F']} />}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} colors={['#4338CA']} />}
     >
       <Card style={styles.summaryCard} mode="elevated">
         <Card.Content>
@@ -62,7 +62,7 @@ export default function OverdueInterestReportScreen() {
             <SummaryItem label="Overdue Months" value={String(summary.totalOverdueMonths)} />
           </View>
           <Divider style={styles.summaryDivider} />
-          <SummaryItem label="Total Overdue Interest" value={formatCurrency(summary.totalOverdueInterest)} color="#B3261E" full />
+          <SummaryItem label="Total Overdue Interest" value={formatCurrency(summary.totalOverdueInterest)} color="#DC2626" full />
         </Card.Content>
       </Card>
 
@@ -99,7 +99,7 @@ export default function OverdueInterestReportScreen() {
   );
 }
 
-function SummaryItem({ label, value, color = '#1E3A5F', full }) {
+function SummaryItem({ label, value, color = '#4338CA', full }) {
   return (
     <View style={full ? styles.summaryItemFull : styles.summaryItem}>
       <Text variant="bodySmall" style={styles.summaryLabel}>
@@ -129,5 +129,5 @@ const styles = StyleSheet.create({
   rowText: { flex: 1 },
   rowTitle: { fontWeight: '600' },
   rowSubtitle: { color: '#6B7280', marginTop: 2 },
-  rowAmount: { fontWeight: '700', color: '#B3261E' },
+  rowAmount: { fontWeight: '700', color: '#DC2626' },
 });

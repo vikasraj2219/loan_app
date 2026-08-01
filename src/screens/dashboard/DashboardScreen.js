@@ -1,18 +1,32 @@
 import { useCallback, useState } from 'react';
 import { View, StyleSheet, ScrollView, RefreshControl, Pressable } from 'react-native';
-import { Text, Card, Divider, ActivityIndicator } from 'react-native-paper';
+import { Text, ActivityIndicator } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
 import { dashboardApi } from '../../api/dashboardApi';
-import StatCard from '../../components/StatCard';
+import MetricCard from '../../components/MetricCard';
+import PortfolioHero from '../../components/PortfolioHero';
+import AttentionCenter from '../../components/AttentionCenter';
+import QuickActions from '../../components/QuickActions';
 import StatusChip from '../../components/StatusChip';
 import ErrorState from '../../components/ErrorState';
 import EmptyState from '../../components/EmptyState';
 import { formatCurrency, formatDate } from '../../utils/format';
 import { getErrorMessage } from '../../utils/errors';
+import { colors, radius, shadow, typography, spacing } from '../../theme/tokens';
+
+function getGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 17) return 'Good afternoon';
+  return 'Good evening';
+}
 
 export default function DashboardScreen({ navigation }) {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
+  const insets = useSafeAreaInsets();
   const [summary, setSummary] = useState(null);
   const [statusDist, setStatusDist] = useState(null);
   const [overdueLoans, setOverdueLoans] = useState([]);
@@ -56,7 +70,7 @@ export default function DashboardScreen({ navigation }) {
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#1E3A5F" />
+        <ActivityIndicator size="large" color={colors.indigo} />
       </View>
     );
   }
@@ -65,193 +79,221 @@ export default function DashboardScreen({ navigation }) {
     return <ErrorState message={error} onRetry={() => loadData()} />;
   }
 
+  const goToBorrower = (id, name) =>
+    navigation.navigate('Borrowers', { screen: 'BorrowerDetails', params: { id, name } });
+
+  const attentionItems = [
+    summary.overdueLoans > 0 && {
+      tone: 'coral',
+      title: `${summary.overdueLoans} Overdue Loan${summary.overdueLoans === 1 ? '' : 's'}`,
+      subtitle: `${formatCurrency(summary.overdueInterestAmount)} in overdue interest`,
+      onPress: () => navigation.navigate('Loans', { screen: 'LoansList' }),
+    },
+    summary.totalPendingInterest > 0 && {
+      tone: 'amber',
+      title: 'Pending Interest',
+      subtitle: `${formatCurrency(summary.totalPendingInterest)} awaiting collection`,
+      onPress: () => navigation.navigate('More', { screen: 'Reports', params: { screen: 'PendingInterest' } }),
+    },
+  ];
+
   return (
     <ScrollView
       style={styles.container}
-      contentContainerStyle={styles.content}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => loadData(true)} colors={['#1E3A5F']} />}
+      contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 110 }]}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => loadData(true)} colors={[colors.indigo]} />}
+      showsVerticalScrollIndicator={false}
     >
-      <Text variant="headlineSmall" style={styles.greeting}>
-        Welcome, {user?.name?.split(' ')[0] || 'there'}
-      </Text>
-
-      <View style={styles.statsGrid}>
-        <StatCard label="Active Loans" value={summary.activeLoans} icon="cash-multiple" color="#1E3A5F" />
-        <StatCard label="Total Borrowers" value={summary.totalBorrowers} icon="account-group" color="#2E7D5B" />
-        <StatCard label="Outstanding Principal" value={formatCurrency(summary.outstandingPrincipal)} icon="chart-line" color="#1E3A5F" />
-        <StatCard label="Overdue Loans" value={summary.overdueLoans} icon="alert-circle-outline" color="#B3261E" />
-        <StatCard label="Today's Collection" value={formatCurrency(summary.todaysCollection)} icon="cash-plus" color="#2E7D5B" />
-        <StatCard label="This Month" value={formatCurrency(summary.monthlyCollection)} icon="calendar-month-outline" color="#2E7D5B" />
-        <StatCard label="Pending Interest" value={formatCurrency(summary.totalPendingInterest)} icon="clock-alert-outline" color="#B08900" />
-        <StatCard label="Overdue Interest" value={formatCurrency(summary.overdueInterestAmount)} icon="clock-remove-outline" color="#B3261E" />
+      <View style={styles.headerRow}>
+        <View>
+          <Text style={styles.greeting}>
+            {getGreeting()}, {user?.name?.split(' ')[0] || 'there'}
+          </Text>
+          <Text style={styles.subGreeting}>Here's how your portfolio is doing</Text>
+        </View>
+        <View style={styles.roleBadge}>
+          <MaterialCommunityIcons name={isAdmin ? 'shield-crown-outline' : 'account-outline'} size={14} color={colors.indigo} />
+        </View>
       </View>
 
-      {/* Loan status distribution as simple horizontal bars — no chart lib needed */}
-      <Card style={styles.section} mode="outlined">
-        <Card.Content>
-          <Text variant="titleMedium" style={styles.sectionTitle}>
-            Loan Status Distribution
-          </Text>
-          {statusDist?.distribution?.every((d) => d.count === 0) ? (
-            <EmptyState icon="chart-bar" title="No loans yet" />
-          ) : (
-            statusDist?.distribution?.map((d) => (
-              <View key={d.status} style={styles.barRow}>
-                <View style={styles.barLabelRow}>
-                  <StatusChip status={d.status} />
-                  <Text variant="bodySmall" style={styles.barCount}>
-                    {d.count} ({d.percentage}%)
-                  </Text>
-                </View>
-                <View style={styles.barTrack}>
-                  <View
-                    style={[
-                      styles.barFill,
-                      {
-                        width: `${d.percentage}%`,
-                        backgroundColor:
-                          d.status === 'active' ? '#1E3A5F' : d.status === 'overdue' ? '#B3261E' : '#6B7280',
-                      },
-                    ]}
-                  />
-                </View>
+      <PortfolioHero
+        outstandingPrincipal={formatCurrency(summary.outstandingPrincipal)}
+        activeLoans={summary.activeLoans}
+        totalBorrowers={summary.totalBorrowers}
+      />
+
+      <AttentionCenter items={attentionItems} />
+
+      <QuickActions
+        actions={[
+          {
+            icon: 'account-plus-outline',
+            label: 'Add Borrower',
+            onPress: () => navigation.navigate('Borrowers', { screen: 'BorrowerForm' }),
+          },
+          {
+            icon: 'cash-plus',
+            label: 'New Loan',
+            emphasized: true,
+            onPress: () => navigation.navigate('Loans', { screen: 'LoanForm' }),
+          },
+          {
+            icon: 'receipt',
+            label: 'Record Payment',
+            onPress: () => navigation.navigate('Payments', { screen: 'SelectBorrowerForPayment' }),
+          },
+        ]}
+      />
+
+      <Text style={styles.sectionHeading}>Overview</Text>
+      <View style={styles.statsGrid}>
+        <MetricCard label="Today's Collection" value={formatCurrency(summary.todaysCollection)} supporting="Collected today" icon="cash-plus" tone="teal" />
+        <MetricCard label="This Month" value={formatCurrency(summary.monthlyCollection)} supporting="Month to date" icon="calendar-month-outline" tone="teal" />
+        <MetricCard label="Pending Interest" value={formatCurrency(summary.totalPendingInterest)} supporting="Needs attention" icon="clock-alert-outline" tone="amber" />
+        <MetricCard label="Overdue Interest" value={formatCurrency(summary.overdueInterestAmount)} supporting="Requires collection" icon="clock-remove-outline" tone="coral" />
+      </View>
+
+      {/* Loan status distribution */}
+      <View style={styles.sectionCard}>
+        <Text style={styles.sectionTitle}>Loan Portfolio Distribution</Text>
+        {statusDist?.distribution?.every((d) => d.count === 0) ? (
+          <EmptyState icon="chart-bar" title="No loans yet" />
+        ) : (
+          statusDist?.distribution?.map((d) => (
+            <View key={d.status} style={styles.barRow}>
+              <View style={styles.barLabelRow}>
+                <StatusChip status={d.status} />
+                <Text style={styles.barCount}>
+                  {d.count} ({d.percentage}%)
+                </Text>
               </View>
-            ))
-          )}
-        </Card.Content>
-      </Card>
+              <View style={styles.barTrack}>
+                <View
+                  style={[
+                    styles.barFill,
+                    {
+                      width: `${d.percentage}%`,
+                      backgroundColor: d.status === 'active' ? colors.indigo : d.status === 'overdue' ? colors.coral : colors.slate,
+                    },
+                  ]}
+                />
+              </View>
+            </View>
+          ))
+        )}
+      </View>
 
       {/* Overdue loans */}
-      <Card style={styles.section} mode="outlined">
-        <Card.Content>
-          <Text variant="titleMedium" style={styles.sectionTitle}>
-            Overdue Loans
-          </Text>
-          {overdueLoans.length === 0 ? (
-            <EmptyState icon="check-circle-outline" title="No overdue loans" description="Everything is on track." />
-          ) : (
-            overdueLoans.map((loan, idx) => (
-              <View key={loan._id}>
-                {idx > 0 && <Divider />}
-                <Pressable
-                  style={styles.rowItem}
-                  onPress={() =>
-                    loan.borrower?._id &&
-                    navigation.navigate('Borrowers', {
-                      screen: 'BorrowerDetails',
-                      params: { id: loan.borrower._id, name: loan.borrower.name },
-                    })
-                  }
-                >
-                  <View style={styles.rowItemText}>
-                    <Text variant="bodyMedium" style={styles.rowTitle}>
-                      {loan.borrower?.name}
-                    </Text>
-                    <Text variant="bodySmall" style={styles.rowSubtitle}>
-                      {loan.daysOverdue != null ? `${loan.daysOverdue} days overdue` : 'Overdue'} · Due {formatDate(loan.dueDate)}
-                    </Text>
-                  </View>
-                  <Text variant="bodyMedium" style={styles.rowAmount}>
-                    {formatCurrency(loan.principalOutstanding)}
-                  </Text>
-                </Pressable>
+      <View style={styles.sectionCard}>
+        <Text style={styles.sectionTitle}>Overdue Loans</Text>
+        {overdueLoans.length === 0 ? (
+          <EmptyState icon="check-circle-outline" title="No overdue loans" description="Everything is on track." />
+        ) : (
+          overdueLoans.map((loan) => (
+            <Pressable
+              key={loan._id}
+              style={styles.rowItem}
+              onPress={() => loan.borrower?._id && goToBorrower(loan.borrower._id, loan.borrower.name)}
+            >
+              <View style={styles.rowItemText}>
+                <Text style={styles.rowTitle}>{loan.borrower?.name}</Text>
+                <Text style={styles.rowSubtitle}>
+                  {loan.daysOverdue != null ? `${loan.daysOverdue} days overdue` : 'Overdue'} · Due {formatDate(loan.dueDate)}
+                </Text>
               </View>
-            ))
-          )}
-        </Card.Content>
-      </Card>
+              <Text style={styles.rowAmountCoral}>{formatCurrency(loan.principalOutstanding)}</Text>
+            </Pressable>
+          ))
+        )}
+      </View>
 
       {/* Recent payments */}
-      <Card style={styles.section} mode="outlined">
-        <Card.Content>
-          <Text variant="titleMedium" style={styles.sectionTitle}>
-            Recent Payments
-          </Text>
-          {recentPayments.length === 0 ? (
-            <EmptyState icon="cash-remove" title="No payments recorded yet" />
-          ) : (
-            recentPayments.map((payment, idx) => (
-              <View key={payment._id}>
-                {idx > 0 && <Divider />}
-                <View style={styles.rowItem}>
-                  <View style={styles.rowItemText}>
-                    <Text variant="bodyMedium" style={styles.rowTitle}>
-                      {payment.borrower?.name}
-                    </Text>
-                    <Text variant="bodySmall" style={styles.rowSubtitle}>
-                      {formatDate(payment.paymentDate)}
-                    </Text>
-                  </View>
-                  <Text variant="bodyMedium" style={styles.rowAmountPositive}>
-                    +{formatCurrency((payment.principalPaid || 0) + (payment.interestPaid || 0))}
-                  </Text>
-                </View>
+      <View style={styles.sectionCard}>
+        <Text style={styles.sectionTitle}>Recent Payments</Text>
+        {recentPayments.length === 0 ? (
+          <EmptyState icon="cash-remove" title="No payments recorded yet" />
+        ) : (
+          recentPayments.map((payment) => (
+            <View key={payment._id} style={styles.rowItem}>
+              <View style={styles.rowItemText}>
+                <Text style={styles.rowTitle}>{payment.borrower?.name}</Text>
+                <Text style={styles.rowSubtitle}>{formatDate(payment.paymentDate)}</Text>
               </View>
-            ))
-          )}
-        </Card.Content>
-      </Card>
+              <Text style={styles.rowAmountTeal}>
+                +{formatCurrency((payment.principalPaid || 0) + (payment.interestPaid || 0))}
+              </Text>
+            </View>
+          ))
+        )}
+      </View>
 
       {/* Top borrowers */}
-      <Card style={[styles.section, styles.lastSection]} mode="outlined">
-        <Card.Content>
-          <Text variant="titleMedium" style={styles.sectionTitle}>
-            Top Borrowers
-          </Text>
-          {topBorrowers.length === 0 ? (
-            <EmptyState icon="account-star-outline" title="No borrowers yet" />
-          ) : (
-            topBorrowers.map((b, idx) => (
-              <View key={b.borrowerId}>
-                {idx > 0 && <Divider />}
-                <Pressable
-                  style={styles.rowItem}
-                  onPress={() =>
-                    navigation.navigate('Borrowers', {
-                      screen: 'BorrowerDetails',
-                      params: { id: b.borrowerId, name: b.name },
-                    })
-                  }
-                >
-                  <View style={styles.rowItemText}>
-                    <Text variant="bodyMedium" style={styles.rowTitle}>
-                      {b.name}
-                    </Text>
-                    <Text variant="bodySmall" style={styles.rowSubtitle}>
-                      {b.loanCount} loan{b.loanCount === 1 ? '' : 's'}
-                    </Text>
-                  </View>
-                  <Text variant="bodyMedium" style={styles.rowAmount}>
-                    {formatCurrency(b.totalLent)}
-                  </Text>
-                </Pressable>
+      <View style={[styles.sectionCard, styles.lastSection]}>
+        <Text style={styles.sectionTitle}>Top Borrowers</Text>
+        {topBorrowers.length === 0 ? (
+          <EmptyState icon="account-star-outline" title="No borrowers yet" />
+        ) : (
+          topBorrowers.map((b) => (
+            <Pressable key={b.borrowerId} style={styles.rowItem} onPress={() => goToBorrower(b.borrowerId, b.name)}>
+              <View style={styles.rowItemText}>
+                <Text style={styles.rowTitle}>{b.name}</Text>
+                <Text style={styles.rowSubtitle}>
+                  {b.loanCount} loan{b.loanCount === 1 ? '' : 's'}
+                </Text>
               </View>
-            ))
-          )}
-        </Card.Content>
-      </Card>
+              <Text style={styles.rowAmountIndigo}>{formatCurrency(b.totalLent)}</Text>
+            </Pressable>
+          ))
+        )}
+      </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F7FA' },
-  content: { padding: 16, paddingBottom: 32 },
-  centered: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F5F7FA' },
-  greeting: { marginBottom: 16, fontWeight: '700', color: '#1E3A5F' },
+  container: { flex: 1, backgroundColor: colors.background },
+  content: { padding: spacing.lg },
+  centered: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.background },
+  headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: spacing.lg },
+  greeting: { ...typography.h1, color: colors.ink },
+  subGreeting: { ...typography.body, color: colors.inkMuted, marginTop: 2 },
+  roleBadge: {
+    width: 32,
+    height: 32,
+    borderRadius: radius.md,
+    backgroundColor: colors.indigoSurface,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 2,
+  },
+  sectionHeading: { ...typography.h3, color: colors.ink, marginTop: spacing.lg, marginBottom: spacing.md },
   statsGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
-  section: { marginBottom: 16 },
+  sectionCard: {
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    marginBottom: spacing.md,
+    ...shadow.sm,
+  },
   lastSection: { marginBottom: 0 },
-  sectionTitle: { fontWeight: '600', marginBottom: 12 },
+  sectionTitle: { ...typography.h3, color: colors.ink, marginBottom: spacing.md },
   barRow: { marginBottom: 14 },
   barLabelRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
-  barCount: { color: '#6B7280' },
-  barTrack: { height: 8, borderRadius: 4, backgroundColor: '#E8EEF4', overflow: 'hidden' },
+  barCount: { ...typography.caption, color: colors.inkMuted },
+  barTrack: { height: 8, borderRadius: 4, backgroundColor: colors.surfaceAlt, overflow: 'hidden' },
   barFill: { height: '100%', borderRadius: 4 },
-  rowItem: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 10 },
+  rowItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.border,
+  },
   rowItemText: { flex: 1, marginRight: 8 },
-  rowTitle: { fontWeight: '600' },
-  rowSubtitle: { color: '#6B7280', marginTop: 2 },
-  rowAmount: { fontWeight: '700', color: '#1E3A5F' },
-  rowAmountPositive: { fontWeight: '700', color: '#2E7D5B' },
+  rowTitle: { ...typography.bodyLarge, color: colors.ink, fontWeight: '700' },
+  rowSubtitle: { ...typography.caption, color: colors.inkMuted, marginTop: 2 },
+  rowAmountIndigo: { ...typography.bodyLarge, fontWeight: '700', color: colors.indigo },
+  rowAmountTeal: { ...typography.bodyLarge, fontWeight: '700', color: colors.teal },
+  rowAmountCoral: { ...typography.bodyLarge, fontWeight: '700', color: colors.coral },
 });

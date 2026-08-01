@@ -69,13 +69,13 @@ export default function PendingInterestReportScreen() {
       <DateRangeFilter dateFrom={dateFrom} dateTo={dateTo} onChangeFrom={setDateFrom} onChangeTo={setDateTo} onApply={() => load()} />
 
       {loading ? (
-        <ActivityIndicator style={styles.loader} size="large" color="#1E3A5F" />
+        <ActivityIndicator style={styles.loader} size="large" color="#4338CA" />
       ) : error && !summary ? (
         <ErrorState message={error} onRetry={() => load()} />
       ) : (
         <ScrollView
           contentContainerStyle={styles.content}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} colors={['#1E3A5F']} />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} colors={['#4338CA']} />}
         >
           <Card style={styles.summaryCard} mode="elevated">
             <Card.Content>
@@ -84,7 +84,7 @@ export default function PendingInterestReportScreen() {
                 <SummaryItem label="Pending Months" value={String(summary.totalPendingMonths)} />
               </View>
               <Divider style={styles.summaryDivider} />
-              <SummaryItem label="Total Pending Interest" value={formatCurrency(summary.totalPendingInterest)} color="#B08900" full />
+              <SummaryItem label="Total Pending Interest" value={formatCurrency(summary.totalPendingInterest)} color="#B45309" full />
             </Card.Content>
           </Card>
 
@@ -134,7 +134,7 @@ export default function PendingInterestReportScreen() {
   );
 }
 
-function SummaryItem({ label, value, color = '#1E3A5F', full }) {
+function SummaryItem({ label, value, color = '#4338CA', full }) {
   return (
     <View style={full ? styles.summaryItemFull : styles.summaryItem}>
       <Text variant="bodySmall" style={styles.summaryLabel}>
@@ -158,12 +158,12 @@ const styles = StyleSheet.create({
   summaryLabel: { color: '#6B7280', marginBottom: 2 },
   summaryValue: { fontWeight: '700' },
   summaryDivider: { marginVertical: 12 },
-  exportButton: { marginBottom: 12, borderColor: '#1E3A5F' },
+  exportButton: { marginBottom: 12, borderColor: '#4338CA' },
   listCard: {},
   sectionTitle: { fontWeight: '600', marginBottom: 12 },
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 10 },
   rowText: { flex: 1 },
   rowTitle: { fontWeight: '600' },
   rowSubtitle: { color: '#6B7280', marginTop: 2 },
-  rowAmount: { fontWeight: '700', color: '#B08900' },
+  rowAmount: { fontWeight: '700', color: '#B45309' },
 });

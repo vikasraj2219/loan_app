@@ -83,7 +83,7 @@ export default function PaymentsScreen({ navigation }) {
       </View>
 
       {loading ? (
-        <ActivityIndicator style={styles.loader} size="large" color="#1E3A5F" />
+        <ActivityIndicator style={styles.loader} size="large" color="#4338CA" />
       ) : error && payments.length === 0 ? (
         <ErrorState message={error} onRetry={() => fetchPayments({ pageToLoad: 1 })} />
       ) : (
@@ -92,7 +92,7 @@ export default function PaymentsScreen({ navigation }) {
           keyExtractor={(item) => item._id}
           contentContainerStyle={styles.listContent}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={() => fetchPayments({ pageToLoad: 1, isRefresh: true })} colors={['#1E3A5F']} />
+            <RefreshControl refreshing={refreshing} onRefresh={() => fetchPayments({ pageToLoad: 1, isRefresh: true })} colors={['#4338CA']} />
           }
           onEndReachedThreshold={0.4}
           onEndReached={handleLoadMore}
@@ -100,7 +100,7 @@ export default function PaymentsScreen({ navigation }) {
           ListEmptyComponent={
             <EmptyState icon="cash-remove" title="No payments recorded" description="Tap Record to add the first one." />
           }
-          ListFooterComponent={loadingMore ? <ActivityIndicator style={styles.footerLoader} color="#1E3A5F" /> : null}
+          ListFooterComponent={loadingMore ? <ActivityIndicator style={styles.footerLoader} color="#4338CA" /> : null}
           renderItem={({ item }) => (
             <MobileRecordCard
               title={item.borrower?.name}
@@ -132,6 +132,6 @@ const styles = StyleSheet.create({
   loader: { marginTop: 48 },
   footerLoader: { marginVertical: 16 },
   listContent: { flexGrow: 1, paddingBottom: 96 },
-  amountText: { fontWeight: '700', color: '#2E7D5B', marginRight: 4 },
-  fab: { position: 'absolute', right: 16, bottom: 16, backgroundColor: '#1E3A5F' },
+  amountText: { fontWeight: '700', color: '#0D9488', marginRight: 4 },
+  fab: { position: 'absolute', right: 16, bottom: 96, backgroundColor: '#4338CA' },
 });

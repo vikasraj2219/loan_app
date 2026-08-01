@@ -85,7 +85,7 @@ export default function BorrowersScreen({ navigation }) {
       </View>
 
       {loading ? (
-        <ActivityIndicator style={styles.loader} size="large" color="#1E3A5F" />
+        <ActivityIndicator style={styles.loader} size="large" color="#4338CA" />
       ) : error && borrowers.length === 0 ? (
         <ErrorState message={error} onRetry={() => fetchBorrowers({ pageToLoad: 1 })} />
       ) : (
@@ -94,7 +94,7 @@ export default function BorrowersScreen({ navigation }) {
           keyExtractor={(item) => item._id}
           contentContainerStyle={styles.listContent}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={() => fetchBorrowers({ pageToLoad: 1, isRefresh: true })} colors={['#1E3A5F']} />
+            <RefreshControl refreshing={refreshing} onRefresh={() => fetchBorrowers({ pageToLoad: 1, isRefresh: true })} colors={['#4338CA']} />
           }
           onEndReachedThreshold={0.4}
           onEndReached={handleLoadMore}
@@ -107,7 +107,7 @@ export default function BorrowersScreen({ navigation }) {
             />
           }
           ListFooterComponent={
-            loadingMore ? <ActivityIndicator style={styles.footerLoader} color="#1E3A5F" /> : null
+            loadingMore ? <ActivityIndicator style={styles.footerLoader} color="#4338CA" /> : null
           }
           renderItem={({ item }) => (
             <MobileRecordCard
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
   footerLoader: { marginVertical: 16 },
   listContent: { flexGrow: 1, paddingBottom: 96 },
   pendingWrap: { alignItems: 'center' },
-  badge: { backgroundColor: '#B08900' },
-  pendingLabel: { color: '#B08900', marginTop: 2 },
-  fab: { position: 'absolute', right: 16, bottom: 16, backgroundColor: '#1E3A5F' },
+  badge: { backgroundColor: '#B45309' },
+  pendingLabel: { color: '#B45309', marginTop: 2 },
+  fab: { position: 'absolute', right: 16, bottom: 96, backgroundColor: '#4338CA' },
 });

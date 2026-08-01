@@ -5,7 +5,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 export default function ErrorState({ message = 'Something went wrong.', onRetry }) {
   return (
     <View style={styles.container}>
-      <MaterialCommunityIcons name="alert-circle-outline" size={48} color="#B3261E" />
+      <MaterialCommunityIcons name="alert-circle-outline" size={48} color="#DC2626" />
       <Text variant="titleMedium" style={styles.title}>
         {message}
       </Text>

@@ -48,7 +48,7 @@ export default function SettingsScreen({ navigation }) {
       <Divider />
       <List.Item title="Change Password" left={(props) => <List.Icon {...props} icon="lock-outline" />} disabled />
 
-      <Button mode="outlined" onPress={logout} style={styles.logoutButton} textColor="#B3261E">
+      <Button mode="outlined" onPress={logout} style={styles.logoutButton} textColor="#DC2626">
         Log Out
       </Button>
     </View>
@@ -56,13 +56,13 @@ export default function SettingsScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
+  container: { flex: 1, padding: 16, paddingBottom: 110 },
   profileRow: { flexDirection: 'row', alignItems: 'center' },
-  avatar: { backgroundColor: '#1E3A5F' },
+  avatar: { backgroundColor: '#4338CA' },
   profileText: { marginLeft: 16 },
   name: { fontWeight: '700' },
   email: { color: '#6B7280' },
-  role: { marginTop: 2, color: '#2E7D5B', fontWeight: '600' },
+  role: { marginTop: 2, color: '#0D9488', fontWeight: '600' },
   divider: { marginVertical: 16 },
-  logoutButton: { marginTop: 24, borderColor: '#B3261E' },
+  logoutButton: { marginTop: 24, borderColor: '#DC2626' },
 });

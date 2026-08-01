@@ -56,7 +56,7 @@ export default function SelectDocumentOwnerScreen({ route, navigation }) {
         style={styles.searchbar}
       />
       {loading ? (
-        <ActivityIndicator style={styles.loader} size="large" color="#1E3A5F" />
+        <ActivityIndicator style={styles.loader} size="large" color="#4338CA" />
       ) : (
         <FlatList
           data={filteredItems}

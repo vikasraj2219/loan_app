@@ -165,7 +165,7 @@ export default function DocumentDetailsScreen({ route, navigation }) {
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={() => setDeleteDialogVisible(false)}>Cancel</Button>
-            <Button onPress={() => handleDelete(true)} loading={busy} disabled={busy} textColor="#B3261E">
+            <Button onPress={() => handleDelete(true)} loading={busy} disabled={busy} textColor="#DC2626">
               Delete
             </Button>
           </Dialog.Actions>
@@ -194,21 +194,21 @@ const styles = StyleSheet.create({
   headerCard: { marginBottom: 16 },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   headerText: { flex: 1 },
-  name: { fontWeight: '700', color: '#1E3A5F' },
+  name: { fontWeight: '700', color: '#4338CA' },
   chipRow: { flexDirection: 'row', gap: 8, marginTop: 8, flexWrap: 'wrap' },
   categoryChip: { backgroundColor: '#E8EEF4' },
-  activeChip: { backgroundColor: '#2E7D5B1A' },
+  activeChip: { backgroundColor: '#0D94881A' },
   archivedChip: { backgroundColor: '#6B72801A' },
   ownerLine: { marginTop: 8, color: '#3A4453' },
   previewImage: { width: '100%', height: 280, borderRadius: 8, backgroundColor: '#E8EEF4', marginBottom: 12 },
   previewPlaceholder: { marginBottom: 12 },
   previewPlaceholderContent: { alignItems: 'center', paddingVertical: 24 },
   previewPlaceholderText: { color: '#6B7280' },
-  openButton: { marginBottom: 16, borderColor: '#1E3A5F' },
+  openButton: { marginBottom: 16, borderColor: '#4338CA' },
   section: { marginBottom: 16 },
   row: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 8, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#E8EEF4' },
   rowLabel: { color: '#6B7280', flex: 1 },
   rowValue: { flex: 1, textAlign: 'right', fontWeight: '600' },
-  deleteText: { color: '#B3261E' },
-  errorText: { color: '#B3261E', textAlign: 'center', marginTop: 8 },
+  deleteText: { color: '#DC2626' },
+  errorText: { color: '#DC2626', textAlign: 'center', marginTop: 8 },
 });

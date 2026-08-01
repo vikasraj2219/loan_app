@@ -100,7 +100,7 @@ export default function PaymentDetailsScreen({ route, navigation }) {
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#1E3A5F" />
+        <ActivityIndicator size="large" color="#4338CA" />
       </View>
     );
   }
@@ -115,7 +115,7 @@ export default function PaymentDetailsScreen({ route, navigation }) {
     <View style={styles.flex}>
       <ScrollView
         contentContainerStyle={styles.content}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} colors={['#1E3A5F']} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} colors={['#4338CA']} />}
       >
         <Card style={styles.headerCard} mode="elevated">
           <Card.Content>
@@ -237,7 +237,7 @@ export default function PaymentDetailsScreen({ route, navigation }) {
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={() => setDeleteDialogVisible(false)}>Cancel</Button>
-            <Button onPress={handleDelete} loading={deleting} disabled={deleting} textColor="#B3261E">
+            <Button onPress={handleDelete} loading={deleting} disabled={deleting} textColor="#DC2626">
               Delete
             </Button>
           </Dialog.Actions>
@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
   headerCard: { marginBottom: 16 },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   headerText: { flex: 1 },
-  amount: { fontWeight: '700', color: '#2E7D5B' },
+  amount: { fontWeight: '700', color: '#0D9488' },
   subLine: { marginTop: 4, color: '#3A4453' },
   section: { marginBottom: 16 },
   lastSection: { marginBottom: 0 },
@@ -275,10 +275,10 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 8, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#E8EEF4' },
   rowLabel: { color: '#6B7280', flex: 1 },
   rowValue: { flex: 1, textAlign: 'right', fontWeight: '600' },
-  deleteText: { color: '#B3261E' },
+  deleteText: { color: '#DC2626' },
   receiptImage: { width: '100%', height: 220, borderRadius: 8, backgroundColor: '#E8EEF4' },
   openButton: { alignSelf: 'flex-start', marginTop: 4 },
   noReceiptText: { color: '#6B7280', marginBottom: 12 },
   receiptButtonsRow: { flexDirection: 'row', gap: 12 },
-  receiptButton: { flex: 1, borderColor: '#1E3A5F' },
+  receiptButton: { flex: 1, borderColor: '#4338CA' },
 });

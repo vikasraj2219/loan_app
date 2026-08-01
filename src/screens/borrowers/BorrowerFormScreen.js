@@ -106,7 +106,7 @@ export default function BorrowerFormScreen({ route, navigation }) {
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#1E3A5F" />
+        <ActivityIndicator size="large" color="#4338CA" />
       </View>
     );
   }
@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   container: { padding: 16, paddingBottom: 32 },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  sectionLabel: { marginTop: 8, marginBottom: 8, color: '#1E3A5F', fontWeight: '700' },
+  sectionLabel: { marginTop: 8, marginBottom: 8, color: '#4338CA', fontWeight: '700' },
   input: { marginBottom: 12 },
   submitButton: { marginTop: 8, paddingVertical: 4 },
 });

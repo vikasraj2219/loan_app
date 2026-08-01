@@ -139,3 +139,17 @@ src/
 | 5 | ✅ Done | Documents |
 | 6 | ✅ Done | Reports & Analytics |
 | 7 | ✅ Done | Polish + final APK build |
+
+## UI/UX Redesign — Round 2
+
+A full visual redesign is now underway, separate from the feature roadmap above. New foundation in place:
+
+- **`src/theme/tokens.js`** — the new design system: colors (deep midnight indigo brand, royal indigo accent, teal/amber/coral status palette), typography scale, spacing scale, radius scale, shadow presets. This is the single source of truth going forward — new components read from here, not hardcoded hex values.
+- **New premium components**: `MetricCard` (redesigned KPI card), `PortfolioHero` (gradient hero summary), `AttentionCenter` (collection-priority list), `QuickActions`, and a fully rebuilt `StatusChip` (now an icon+label badge, not just a colored chip — same import path, so every existing screen using it picked up the new look automatically).
+- **New floating pill navigation** (`FloatingTabBar`) — replaces the standard Material bottom tabs with an animated floating indigo bar, active-tab pill indicator, and midnight color. It auto-hides once you drill into a detail/form screen so it never covers content, and reappears at each tab's root.
+- **Dashboard fully rebuilt** using all of the above: time-based greeting, gradient portfolio hero, attention-required section, quick actions, and a KPI grid — matching the design brief.
+- Every screen's headers and accent colors were migrated to the new palette in one pass (old navy `#1E3A5F` → indigo/midnight, old green/amber/red → new teal/amber/coral), so the whole app is visually consistent with the new direction even before each screen gets its own structural redesign.
+
+**Still ahead** (per the 16-phase brief): Borrowers screen + borrower cards, Borrower Profile tabs, Loans screen + loan cards, Loan Detail (repayment progress visualization, monthly interest tracking), Payments screen + payment receipts, multi-step Add Payment / Add Loan flows, Documents, search/filter experience, skeleton loading states, and animation/micro-interaction polish. Say "next phase" to continue in the same order as the rest of this build.
+
+**New native dependency**: `expo-linear-gradient` (for the hero gradient). Run `npx expo install --fix` after pulling this update.

@@ -76,7 +76,7 @@ export default function LoansScreen({ navigation }) {
       </View>
 
       {loading ? (
-        <ActivityIndicator style={styles.loader} size="large" color="#1E3A5F" />
+        <ActivityIndicator style={styles.loader} size="large" color="#4338CA" />
       ) : error && loans.length === 0 ? (
         <ErrorState message={error} onRetry={() => fetchLoans({ pageToLoad: 1 })} />
       ) : (
@@ -85,7 +85,7 @@ export default function LoansScreen({ navigation }) {
           keyExtractor={(item) => item._id}
           contentContainerStyle={styles.listContent}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={() => fetchLoans({ pageToLoad: 1, isRefresh: true })} colors={['#1E3A5F']} />
+            <RefreshControl refreshing={refreshing} onRefresh={() => fetchLoans({ pageToLoad: 1, isRefresh: true })} colors={['#4338CA']} />
           }
           onEndReachedThreshold={0.4}
           onEndReached={handleLoadMore}
@@ -93,7 +93,7 @@ export default function LoansScreen({ navigation }) {
           ListEmptyComponent={
             <EmptyState icon="cash-multiple" title="No loans found" description="Add a loan to get started." />
           }
-          ListFooterComponent={loadingMore ? <ActivityIndicator style={styles.footerLoader} color="#1E3A5F" /> : null}
+          ListFooterComponent={loadingMore ? <ActivityIndicator style={styles.footerLoader} color="#4338CA" /> : null}
           renderItem={({ item }) => (
             <MobileRecordCard
               title={item.borrower?.name}
@@ -121,5 +121,5 @@ const styles = StyleSheet.create({
   loader: { marginTop: 48 },
   footerLoader: { marginVertical: 16 },
   listContent: { flexGrow: 1, paddingBottom: 96 },
-  fab: { position: 'absolute', right: 16, bottom: 16, backgroundColor: '#1E3A5F' },
+  fab: { position: 'absolute', right: 16, bottom: 96, backgroundColor: '#4338CA' },
 });

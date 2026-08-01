@@ -76,7 +76,7 @@ export default function LoanDetailsScreen({ route, navigation }) {
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#1E3A5F" />
+        <ActivityIndicator size="large" color="#4338CA" />
       </View>
     );
   }
@@ -98,7 +98,7 @@ export default function LoanDetailsScreen({ route, navigation }) {
       )}
       <ScrollView
         contentContainerStyle={styles.content}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => loadLoan(true)} colors={['#1E3A5F']} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => loadLoan(true)} colors={['#4338CA']} />}
       >
         <Card style={styles.headerCard} mode="elevated">
           <Card.Content>
@@ -184,9 +184,9 @@ export default function LoanDetailsScreen({ route, navigation }) {
               <SummaryItem label="Principal Outstanding" value={formatCurrency(loan.principalOutstanding)} />
               <SummaryItem label="Interest Rate" value={`${loan.interestRate}% / month`} />
               <SummaryItem label="This Month's Interest" value={formatCurrency(currentMonthlyInterest)} />
-              <SummaryItem label="Pending Interest" value={formatCurrency(pendingInterest)} color="#B08900" />
-              <SummaryItem label="Total Outstanding" value={formatCurrency(totalOutstanding)} color="#1E3A5F" />
-              <SummaryItem label="Principal Paid" value={formatCurrency(loan.totalPrincipalPaid)} color="#2E7D5B" />
+              <SummaryItem label="Pending Interest" value={formatCurrency(pendingInterest)} color="#B45309" />
+              <SummaryItem label="Total Outstanding" value={formatCurrency(totalOutstanding)} color="#4338CA" />
+              <SummaryItem label="Principal Paid" value={formatCurrency(loan.totalPrincipalPaid)} color="#0D9488" />
               <SummaryItem label="Loan Date" value={formatDate(loan.loanDate)} />
               <SummaryItem label="Due Date" value={formatDate(loan.dueDate)} />
             </View>
@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
   headerCard: { marginBottom: 16 },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   headerText: { flex: 1, gap: 6 },
-  amount: { fontWeight: '700', color: '#1E3A5F' },
+  amount: { fontWeight: '700', color: '#4338CA' },
   borrowerLink: { marginTop: 8, color: '#3A4453' },
   section: { marginBottom: 16 },
   lastSection: { marginBottom: 0 },
@@ -264,12 +264,12 @@ const styles = StyleSheet.create({
   summaryGrid: { flexDirection: 'row', flexWrap: 'wrap' },
   summaryItem: { width: '50%', marginBottom: 14 },
   summaryLabel: { color: '#6B7280', marginBottom: 2 },
-  summaryValue: { fontWeight: '700', color: '#1E3A5F' },
+  summaryValue: { fontWeight: '700', color: '#4338CA' },
   notesDivider: { marginVertical: 12 },
   notesLabel: { color: '#6B7280', marginBottom: 4 },
   paymentRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 10 },
   paymentRowText: { flex: 1 },
   rowTitle: { fontWeight: '600' },
   rowSubtitle: { color: '#6B7280', marginTop: 2 },
-  rowAmountPositive: { fontWeight: '700', color: '#2E7D5B' },
+  rowAmountPositive: { fontWeight: '700', color: '#0D9488' },
 });
