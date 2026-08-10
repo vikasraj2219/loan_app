@@ -1,14 +1,17 @@
 import { useCallback, useState } from 'react';
 import { View, StyleSheet, ScrollView, RefreshControl } from 'react-native';
-import { Text, Card, Divider, ActivityIndicator, Menu, IconButton, Banner } from 'react-native-paper';
+import { Text, ActivityIndicator, Menu, IconButton, Banner } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/native';
 import { loanApi } from '../../api/loanApi';
 import { useAuth } from '../../context/AuthContext';
 import ErrorState from '../../components/ErrorState';
 import EmptyState from '../../components/EmptyState';
 import StatusChip from '../../components/StatusChip';
+import RepaymentProgress from '../../components/RepaymentProgress';
+import RepaymentTimeline from '../../components/RepaymentTimeline';
 import { formatCurrency, formatDate } from '../../utils/format';
 import { getErrorMessage } from '../../utils/errors';
+import { colors, radius, shadow, typography, spacing } from '../../theme/tokens';
 
 export default function LoanDetailsScreen({ route, navigation }) {
   const { id } = route.params;
@@ -76,7 +79,7 @@ export default function LoanDetailsScreen({ route, navigation }) {
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#4338CA" />
+        <ActivityIndicator size="large" color={colors.indigo} />
       </View>
     );
   }
@@ -88,6 +91,7 @@ export default function LoanDetailsScreen({ route, navigation }) {
   const pendingInterest = Math.max((loan.totalInterestAccrued || 0) - (loan.totalInterestPaid || 0), 0);
   const currentMonthlyInterest = Math.round((loan.principalOutstanding * loan.interestRate) / 100);
   const totalOutstanding = loan.principalOutstanding + pendingInterest;
+  const payments = loan.payments || [];
 
   return (
     <View style={styles.flex}>
@@ -98,151 +102,121 @@ export default function LoanDetailsScreen({ route, navigation }) {
       )}
       <ScrollView
         contentContainerStyle={styles.content}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => loadLoan(true)} colors={['#4338CA']} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => loadLoan(true)} colors={[colors.indigo]} />}
       >
-        <Card style={styles.headerCard} mode="elevated">
-          <Card.Content>
-            <View style={styles.headerRow}>
-              <View style={styles.headerText}>
-                <Text variant="titleLarge" style={styles.amount}>
-                  {formatCurrency(loan.loanAmount)}
-                </Text>
-                <StatusChip status={loan.status} />
-              </View>
-              <Menu
-                visible={menuVisible}
-                onDismiss={() => setMenuVisible(false)}
-                anchor={<IconButton icon="dots-vertical" onPress={() => setMenuVisible(true)} disabled={actionLoading} />}
-              >
+        {/* Header */}
+        <View style={styles.headerCard}>
+          <View style={styles.headerTopRow}>
+            <View style={styles.headerText}>
+              <Text style={styles.borrowerName}>{loan.borrower?.name}</Text>
+              <Text style={styles.loanIdText}>Loan #{id.slice(-6).toUpperCase()}</Text>
+            </View>
+            <Menu
+              visible={menuVisible}
+              onDismiss={() => setMenuVisible(false)}
+              anchor={<IconButton icon="dots-vertical" onPress={() => setMenuVisible(true)} disabled={actionLoading} />}
+            >
+              <Menu.Item
+                leadingIcon="pencil-outline"
+                title="Edit"
+                onPress={() => {
+                  setMenuVisible(false);
+                  navigation.navigate('LoanForm', { id });
+                }}
+              />
+              <Menu.Item
+                leadingIcon="calendar-clock-outline"
+                title="Interest Schedule"
+                onPress={() => {
+                  setMenuVisible(false);
+                  navigation.navigate('InterestSchedule', { id, borrowerName: loan.borrower?.name });
+                }}
+              />
+              <Menu.Item
+                leadingIcon="file-document-multiple-outline"
+                title="Documents"
+                onPress={() => {
+                  setMenuVisible(false);
+                  navigation.navigate('More', {
+                    screen: 'Documents',
+                    params: { screen: 'DocumentUpload', params: { ownerType: 'loan', ownerId: id, ownerName: `${loan.borrower?.name} loan` } },
+                  });
+                }}
+              />
+              {loan.status !== 'closed' && (
                 <Menu.Item
-                  leadingIcon="pencil-outline"
-                  title="Edit"
+                  leadingIcon="cash-plus"
+                  title="Record Payment"
                   onPress={() => {
                     setMenuVisible(false);
-                    navigation.navigate('LoanForm', { id });
-                  }}
-                />
-                <Menu.Item
-                  leadingIcon="calendar-clock-outline"
-                  title="Interest Schedule"
-                  onPress={() => {
-                    setMenuVisible(false);
-                    navigation.navigate('InterestSchedule', { id, borrowerName: loan.borrower?.name });
-                  }}
-                />
-                <Menu.Item
-                  leadingIcon="file-document-multiple-outline"
-                  title="Documents"
-                  onPress={() => {
-                    setMenuVisible(false);
-                    navigation.navigate('More', {
-                      screen: 'Documents',
-                      params: {
-                        screen: 'DocumentUpload',
-                        params: { ownerType: 'loan', ownerId: id, ownerName: `${loan.borrower?.name} loan` },
-                      },
+                    navigation.navigate('Payments', {
+                      screen: 'PaymentForm',
+                      params: { loanId: id, borrowerName: loan.borrower?.name, principalOutstanding: loan.principalOutstanding },
                     });
                   }}
                 />
-                {loan.status !== 'closed' && (
-                  <Menu.Item
-                    leadingIcon="cash-plus"
-                    title="Record Payment"
-                    onPress={() => {
-                      setMenuVisible(false);
-                      navigation.navigate('Payments', {
-                        screen: 'PaymentForm',
-                        params: {
-                          loanId: id,
-                          borrowerName: loan.borrower?.name,
-                          principalOutstanding: loan.principalOutstanding,
-                        },
-                      });
-                    }}
-                  />
-                )}
-                {loan.status !== 'closed' && loan.principalOutstanding === 0 && (
-                  <Menu.Item leadingIcon="check-circle-outline" title="Close Loan" onPress={handleClose} />
-                )}
-                {isAdmin && loan.status === 'active' && (
-                  <Menu.Item leadingIcon="alert-outline" title="Mark Overdue" onPress={handleMarkOverdue} />
-                )}
-              </Menu>
-            </View>
-            <Text variant="bodyMedium" style={styles.borrowerLink}>
-              {loan.borrower?.name} · {loan.borrower?.phone}
-            </Text>
-          </Card.Content>
-        </Card>
+              )}
+              {loan.status !== 'closed' && loan.principalOutstanding === 0 && (
+                <Menu.Item leadingIcon="check-circle-outline" title="Close Loan" onPress={handleClose} />
+              )}
+              {isAdmin && loan.status === 'active' && (
+                <Menu.Item leadingIcon="alert-outline" title="Mark Overdue" onPress={handleMarkOverdue} />
+              )}
+            </Menu>
+          </View>
+          <StatusChip status={loan.status} />
 
-        <Card style={styles.section} mode="outlined">
-          <Card.Content>
-            <Text variant="titleMedium" style={styles.sectionTitle}>
-              Loan Summary
-            </Text>
-            <View style={styles.summaryGrid}>
-              <SummaryItem label="Principal Outstanding" value={formatCurrency(loan.principalOutstanding)} />
-              <SummaryItem label="Interest Rate" value={`${loan.interestRate}% / month`} />
-              <SummaryItem label="This Month's Interest" value={formatCurrency(currentMonthlyInterest)} />
-              <SummaryItem label="Pending Interest" value={formatCurrency(pendingInterest)} color="#B45309" />
-              <SummaryItem label="Total Outstanding" value={formatCurrency(totalOutstanding)} color="#4338CA" />
-              <SummaryItem label="Principal Paid" value={formatCurrency(loan.totalPrincipalPaid)} color="#0D9488" />
-              <SummaryItem label="Loan Date" value={formatDate(loan.loanDate)} />
-              <SummaryItem label="Due Date" value={formatDate(loan.dueDate)} />
-            </View>
-            {loan.notes ? (
-              <>
-                <Divider style={styles.notesDivider} />
-                <Text variant="bodySmall" style={styles.notesLabel}>
-                  Notes
-                </Text>
-                <Text variant="bodyMedium">{loan.notes}</Text>
-              </>
-            ) : null}
-          </Card.Content>
-        </Card>
+          <View style={styles.progressWrap}>
+            <RepaymentProgress loanAmount={loan.loanAmount} outstanding={loan.principalOutstanding} />
+          </View>
+        </View>
 
-        <Card style={[styles.section, styles.lastSection]} mode="outlined">
-          <Card.Content>
-            <Text variant="titleMedium" style={styles.sectionTitle}>
-              Payment History
-            </Text>
-            {!loan.payments || loan.payments.length === 0 ? (
-              <EmptyState icon="cash-remove" title="No payments yet" description="Payments module arrives in Phase 4." />
-            ) : (
-              loan.payments.map((payment, idx) => (
-                <View key={payment._id}>
-                  {idx > 0 && <Divider />}
-                  <View style={styles.paymentRow}>
-                    <View style={styles.paymentRowText}>
-                      <Text variant="bodyMedium" style={styles.rowTitle}>
-                        {formatDate(payment.paymentDate)}
-                      </Text>
-                      <Text variant="bodySmall" style={styles.rowSubtitle}>
-                        Principal {formatCurrency(payment.principalPaid)} · Interest {formatCurrency(payment.interestPaid)}
-                      </Text>
-                    </View>
-                    <Text variant="bodyMedium" style={styles.rowAmountPositive}>
-                      +{formatCurrency((payment.principalPaid || 0) + (payment.interestPaid || 0))}
-                    </Text>
-                  </View>
-                </View>
-              ))
-            )}
-          </Card.Content>
-        </Card>
+        {/* Info grid */}
+        <View style={styles.sectionCard}>
+          <Text style={styles.sectionTitle}>Loan Details</Text>
+          <View style={styles.infoGrid}>
+            <InfoTile label="Loan Date" value={formatDate(loan.loanDate)} />
+            <InfoTile label="Interest Rate" value={`${loan.interestRate}% / month`} />
+            {loan.tenureMonths ? <InfoTile label="Tenure" value={`${loan.tenureMonths} months`} /> : null}
+            <InfoTile label="Due Date" value={formatDate(loan.dueDate)} />
+            <InfoTile label="This Month's Interest" value={formatCurrency(currentMonthlyInterest)} />
+            <InfoTile label="Pending Interest" value={formatCurrency(pendingInterest)} tone="amber" />
+            <InfoTile label="Total Outstanding" value={formatCurrency(totalOutstanding)} tone="indigo" />
+            <InfoTile label="Principal Paid" value={formatCurrency(loan.totalPrincipalPaid)} tone="teal" />
+          </View>
+          {loan.notes ? (
+            <View style={styles.notesBlock}>
+              <Text style={styles.notesLabel}>Notes</Text>
+              <Text style={styles.notesText}>{loan.notes}</Text>
+            </View>
+          ) : null}
+        </View>
+
+        {/* Repayment timeline */}
+        <View style={[styles.sectionCard, styles.lastSection]}>
+          <Text style={styles.sectionTitle}>Repayment Timeline</Text>
+          {payments.length === 0 ? (
+            <EmptyState icon="cash-remove" title="No payments yet" description="Record a payment to start tracking repayments." />
+          ) : (
+            <RepaymentTimeline
+              loanAmount={loan.loanAmount}
+              loanDate={loan.loanDate}
+              payments={payments}
+              remaining={loan.principalOutstanding}
+            />
+          )}
+        </View>
       </ScrollView>
     </View>
   );
 }
 
-function SummaryItem({ label, value, color }) {
+function InfoTile({ label, value, tone }) {
+  const toneColor = tone ? { amber: colors.amber, indigo: colors.indigo, teal: colors.teal }[tone] : colors.ink;
   return (
-    <View style={styles.summaryItem}>
-      <Text variant="bodySmall" style={styles.summaryLabel}>
-        {label}
-      </Text>
-      <Text variant="titleMedium" style={[styles.summaryValue, color ? { color } : null]}>
+    <View style={styles.infoTile}>
+      <Text style={styles.infoLabel}>{label}</Text>
+      <Text style={[styles.infoValue, { color: toneColor }]} numberOfLines={1} adjustsFontSizeToFit>
         {value}
       </Text>
     </View>
@@ -250,26 +224,23 @@ function SummaryItem({ label, value, color }) {
 }
 
 const styles = StyleSheet.create({
-  flex: { flex: 1, backgroundColor: '#F5F7FA' },
-  content: { padding: 16, paddingBottom: 32 },
-  centered: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F5F7FA' },
-  headerCard: { marginBottom: 16 },
-  headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  headerText: { flex: 1, gap: 6 },
-  amount: { fontWeight: '700', color: '#4338CA' },
-  borrowerLink: { marginTop: 8, color: '#3A4453' },
-  section: { marginBottom: 16 },
+  flex: { flex: 1, backgroundColor: colors.background },
+  content: { padding: spacing.lg, paddingBottom: 40 },
+  centered: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.background },
+  headerCard: { backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.lg, marginBottom: spacing.md, ...shadow.sm },
+  headerTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
+  headerText: { flex: 1 },
+  borrowerName: { ...typography.h2, color: colors.ink },
+  loanIdText: { ...typography.caption, color: colors.inkFaint, marginTop: 2 },
+  progressWrap: { marginTop: spacing.lg },
+  sectionCard: { backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.lg, marginBottom: spacing.md, ...shadow.sm },
   lastSection: { marginBottom: 0 },
-  sectionTitle: { fontWeight: '600', marginBottom: 12 },
-  summaryGrid: { flexDirection: 'row', flexWrap: 'wrap' },
-  summaryItem: { width: '50%', marginBottom: 14 },
-  summaryLabel: { color: '#6B7280', marginBottom: 2 },
-  summaryValue: { fontWeight: '700', color: '#4338CA' },
-  notesDivider: { marginVertical: 12 },
-  notesLabel: { color: '#6B7280', marginBottom: 4 },
-  paymentRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 10 },
-  paymentRowText: { flex: 1 },
-  rowTitle: { fontWeight: '600' },
-  rowSubtitle: { color: '#6B7280', marginTop: 2 },
-  rowAmountPositive: { fontWeight: '700', color: '#0D9488' },
+  sectionTitle: { ...typography.h3, color: colors.ink, marginBottom: spacing.md },
+  infoGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
+  infoTile: { width: '48%', marginBottom: spacing.md },
+  infoLabel: { ...typography.caption, color: colors.inkFaint, marginBottom: 3 },
+  infoValue: { ...typography.h3, fontSize: 16 },
+  notesBlock: { marginTop: spacing.sm, paddingTop: spacing.md, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border },
+  notesLabel: { ...typography.caption, color: colors.inkFaint, marginBottom: 4 },
+  notesText: { ...typography.body, color: colors.ink },
 });
