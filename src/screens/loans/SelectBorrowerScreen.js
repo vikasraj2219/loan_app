@@ -1,11 +1,12 @@
 import { useCallback, useState } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
-import { Searchbar, ActivityIndicator, Divider } from 'react-native-paper';
+import { Searchbar, ActivityIndicator } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/native';
 import { borrowerApi } from '../../api/borrowerApi';
 import EmptyState from '../../components/EmptyState';
-import MobileRecordCard from '../../components/MobileRecordCard';
+import BorrowerCard from '../../components/BorrowerCard';
 import { useDebounce } from '../../hooks/useDebounce';
+import { colors, spacing } from '../../theme/tokens';
 
 export default function SelectBorrowerScreen({ navigation, route }) {
   const returnTo = route.params?.returnTo || 'LoanForm';
@@ -43,12 +44,12 @@ export default function SelectBorrowerScreen({ navigation, route }) {
         style={styles.searchbar}
       />
       {loading ? (
-        <ActivityIndicator style={styles.loader} size="large" color="#4338CA" />
+        <ActivityIndicator style={styles.loader} size="large" color={colors.indigo} />
       ) : (
         <FlatList
           data={borrowers}
           keyExtractor={(item) => item._id}
-          ItemSeparatorComponent={() => <Divider />}
+          contentContainerStyle={styles.listContent}
           ListEmptyComponent={
             <EmptyState
               icon="account-search-outline"
@@ -57,12 +58,9 @@ export default function SelectBorrowerScreen({ navigation, route }) {
             />
           }
           renderItem={({ item }) => (
-            <MobileRecordCard
-              title={item.name}
-              subtitle={item.phone}
-              onPress={() =>
-                navigation.navigate(returnTo, { selectedBorrowerId: item._id, selectedBorrowerName: item.name })
-              }
+            <BorrowerCard
+              borrower={item}
+              onPress={() => navigation.navigate(returnTo, { selectedBorrowerId: item._id, selectedBorrowerName: item.name })}
             />
           )}
         />
@@ -72,7 +70,8 @@ export default function SelectBorrowerScreen({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F7FA' },
-  searchbar: { margin: 16, marginBottom: 8, elevation: 0, backgroundColor: '#F0F2F5' },
+  container: { flex: 1, backgroundColor: colors.background },
+  searchbar: { margin: spacing.lg, marginBottom: spacing.sm, backgroundColor: colors.surface },
   loader: { marginTop: 48 },
+  listContent: { padding: spacing.lg, paddingTop: 0 },
 });

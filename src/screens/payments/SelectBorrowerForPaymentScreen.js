@@ -1,11 +1,12 @@
 import { useCallback, useState } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
-import { Searchbar, ActivityIndicator, Divider } from 'react-native-paper';
+import { Searchbar, ActivityIndicator, Text } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/native';
 import { borrowerApi } from '../../api/borrowerApi';
 import EmptyState from '../../components/EmptyState';
-import MobileRecordCard from '../../components/MobileRecordCard';
+import BorrowerCard from '../../components/BorrowerCard';
 import { useDebounce } from '../../hooks/useDebounce';
+import { colors, typography, spacing } from '../../theme/tokens';
 
 export default function SelectBorrowerForPaymentScreen({ navigation }) {
   const [search, setSearch] = useState('');
@@ -35,23 +36,20 @@ export default function SelectBorrowerForPaymentScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Searchbar placeholder="Search borrower" value={search} onChangeText={setSearch} style={styles.searchbar} />
+      <View style={styles.header}>
+        <Text style={styles.title}>Who's paying?</Text>
+        <Searchbar placeholder="Search active borrowers" value={search} onChangeText={setSearch} style={styles.searchbar} />
+      </View>
       {loading ? (
-        <ActivityIndicator style={styles.loader} size="large" color="#4338CA" />
+        <ActivityIndicator style={styles.loader} size="large" color={colors.indigo} />
       ) : (
         <FlatList
           data={borrowers}
           keyExtractor={(item) => item._id}
-          ItemSeparatorComponent={() => <Divider />}
+          contentContainerStyle={styles.listContent}
           ListEmptyComponent={<EmptyState icon="account-search-outline" title="No active borrowers found" />}
           renderItem={({ item }) => (
-            <MobileRecordCard
-              title={item.name}
-              subtitle={item.phone}
-              onPress={() =>
-                navigation.navigate('SelectLoanForPayment', { borrowerId: item._id, borrowerName: item.name })
-              }
-            />
+            <BorrowerCard borrower={item} onPress={() => navigation.navigate('SelectLoanForPayment', { borrowerId: item._id, borrowerName: item.name })} />
           )}
         />
       )}
@@ -60,7 +58,10 @@ export default function SelectBorrowerForPaymentScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F7FA' },
-  searchbar: { margin: 16, marginBottom: 8, elevation: 0, backgroundColor: '#F0F2F5' },
+  container: { flex: 1, backgroundColor: colors.background },
+  header: { padding: spacing.lg, paddingBottom: spacing.md },
+  title: { ...typography.h2, color: colors.ink, marginBottom: spacing.md },
+  searchbar: { backgroundColor: colors.surface },
   loader: { marginTop: 48 },
+  listContent: { padding: spacing.lg, paddingTop: 0 },
 });

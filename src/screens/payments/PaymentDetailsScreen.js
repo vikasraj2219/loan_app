@@ -1,21 +1,17 @@
 import { useCallback, useState } from 'react';
-import { View, StyleSheet, ScrollView, RefreshControl, Image, Linking } from 'react-native';
-import { Text, Card, Divider, ActivityIndicator, Menu, IconButton, Button, Dialog, Portal } from 'react-native-paper';
+import { View, StyleSheet, ScrollView, RefreshControl, Image, Linking, Share } from 'react-native';
+import { Text, ActivityIndicator, Menu, IconButton, Button, Dialog, Portal } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { paymentApi } from '../../api/paymentApi';
 import { useAuth } from '../../context/AuthContext';
 import ErrorState from '../../components/ErrorState';
 import { formatCurrency, formatDateTime } from '../../utils/format';
 import { getErrorMessage } from '../../utils/errors';
+import { colors, radius, shadow, typography, spacing } from '../../theme/tokens';
 
-const MODE_LABELS = {
-  cash: 'Cash',
-  bank_transfer: 'Bank Transfer',
-  upi: 'UPI',
-  cheque: 'Cheque',
-  other: 'Other',
-};
+const MODE_LABELS = { cash: 'Cash', bank_transfer: 'Bank Transfer', upi: 'UPI', cheque: 'Cheque', other: 'Other' };
 
 export default function PaymentDetailsScreen({ route, navigation }) {
   const { id } = route.params;
@@ -84,6 +80,26 @@ export default function PaymentDetailsScreen({ route, navigation }) {
     }
   };
 
+  const handleShareReceipt = async () => {
+    const total = (payment.principalPaid || 0) + (payment.interestPaid || 0);
+    const lines = [
+      'PAYMENT RECEIPT',
+      '',
+      `Borrower: ${payment.borrower?.name}`,
+      `Date: ${formatDateTime(payment.paymentDate)}`,
+      `Principal: ${formatCurrency(payment.principalPaid)}`,
+      `Interest: ${formatCurrency(payment.interestPaid)}`,
+      `Total: ${formatCurrency(total)}`,
+      `Payment Mode: ${MODE_LABELS[payment.paymentMode] || payment.paymentMode}`,
+      payment.referenceNumber ? `Reference: ${payment.referenceNumber}` : null,
+    ].filter(Boolean);
+    try {
+      await Share.share({ message: lines.join('\n') });
+    } catch {
+      // user cancelled share sheet — nothing to do
+    }
+  };
+
   const handleDelete = async () => {
     setDeleting(true);
     try {
@@ -100,7 +116,7 @@ export default function PaymentDetailsScreen({ route, navigation }) {
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#4338CA" />
+        <ActivityIndicator size="large" color={colors.indigo} />
       </View>
     );
   }
@@ -115,129 +131,109 @@ export default function PaymentDetailsScreen({ route, navigation }) {
     <View style={styles.flex}>
       <ScrollView
         contentContainerStyle={styles.content}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} colors={['#4338CA']} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} colors={[colors.indigo]} />}
       >
-        <Card style={styles.headerCard} mode="elevated">
-          <Card.Content>
-            <View style={styles.headerRow}>
-              <View style={styles.headerText}>
-                <Text variant="titleLarge" style={styles.amount}>
-                  {formatCurrency(total)}
-                </Text>
-                <Text variant="bodyMedium" style={styles.subLine}>
-                  {payment.borrower?.name} · {formatDateTime(payment.paymentDate)}
-                </Text>
-              </View>
-              {isAdmin && (
-                <Menu
-                  visible={menuVisible}
-                  onDismiss={() => setMenuVisible(false)}
-                  anchor={<IconButton icon="dots-vertical" onPress={() => setMenuVisible(true)} disabled={uploading} />}
-                >
-                  <Menu.Item
-                    leadingIcon="pencil-outline"
-                    title="Edit"
-                    onPress={() => {
-                      setMenuVisible(false);
-                      navigation.navigate('PaymentEdit', { id });
-                    }}
-                  />
-                  <Menu.Item leadingIcon="camera-outline" title="Add Receipt (Camera)" onPress={() => handleAttachReceipt(true)} />
-                  <Menu.Item leadingIcon="image-outline" title="Add Receipt (Gallery)" onPress={() => handleAttachReceipt(false)} />
-                  <Divider />
-                  <Menu.Item
-                    leadingIcon="delete-outline"
-                    title="Delete"
-                    titleStyle={styles.deleteText}
-                    onPress={() => {
-                      setMenuVisible(false);
-                      setDeleteDialogVisible(true);
-                    }}
-                  />
-                </Menu>
-              )}
+        <View style={styles.topBar}>
+          <View style={{ flex: 1 }} />
+          {isAdmin && (
+            <Menu
+              visible={menuVisible}
+              onDismiss={() => setMenuVisible(false)}
+              anchor={<IconButton icon="dots-vertical" onPress={() => setMenuVisible(true)} disabled={uploading} />}
+            >
+              <Menu.Item
+                leadingIcon="pencil-outline"
+                title="Edit"
+                onPress={() => {
+                  setMenuVisible(false);
+                  navigation.navigate('PaymentEdit', { id });
+                }}
+              />
+              <Menu.Item leadingIcon="camera-outline" title="Add Receipt (Camera)" onPress={() => handleAttachReceipt(true)} />
+              <Menu.Item leadingIcon="image-outline" title="Add Receipt (Gallery)" onPress={() => handleAttachReceipt(false)} />
+              <Menu.Item
+                leadingIcon="delete-outline"
+                title="Delete"
+                titleStyle={styles.deleteText}
+                onPress={() => {
+                  setMenuVisible(false);
+                  setDeleteDialogVisible(true);
+                }}
+              />
+            </Menu>
+          )}
+        </View>
+
+        {/* Receipt card */}
+        <View style={styles.receiptCard}>
+          <View style={styles.successBadge}>
+            <MaterialCommunityIcons name="check" size={22} color={colors.white} />
+          </View>
+          <Text style={styles.receiptAmount}>{formatCurrency(total)}</Text>
+          <Text style={styles.receiptSub}>{payment.borrower?.name}</Text>
+          <Text style={styles.receiptDate}>{formatDateTime(payment.paymentDate)}</Text>
+
+          <View style={styles.dashedDivider} />
+
+          <ReceiptRow label="Principal" value={formatCurrency(payment.principalPaid)} />
+          <ReceiptRow label="Interest" value={formatCurrency(payment.interestPaid)} />
+          <View style={styles.receiptTotalRow}>
+            <Text style={styles.receiptTotalLabel}>Total</Text>
+            <Text style={styles.receiptTotalValue}>{formatCurrency(total)}</Text>
+          </View>
+
+          <View style={styles.dashedDivider} />
+
+          <ReceiptRow label="Payment Mode" value={MODE_LABELS[payment.paymentMode] || payment.paymentMode} />
+          {payment.referenceNumber ? <ReceiptRow label="Reference No." value={payment.referenceNumber} /> : null}
+          {payment.principalOutstandingAfter != null ? (
+            <ReceiptRow label="Outstanding After" value={formatCurrency(payment.principalOutstandingAfter)} />
+          ) : null}
+          {payment.recordedBy?.name ? <ReceiptRow label="Recorded By" value={payment.recordedBy.name} /> : null}
+          {payment.remarks ? <ReceiptRow label="Remarks" value={payment.remarks} /> : null}
+        </View>
+
+        <View style={styles.actionsRow}>
+          <Button mode="outlined" icon="share-variant-outline" onPress={handleShareReceipt} style={styles.actionButton}>
+            Share
+          </Button>
+        </View>
+
+        {/* Receipt photo */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Receipt Photo</Text>
+          {payment.receiptFile?.secureUrl ? (
+            <View>
+              <Image source={{ uri: payment.receiptFile.secureUrl }} style={styles.receiptImage} resizeMode="cover" />
+              <Button mode="text" icon="open-in-new" onPress={() => Linking.openURL(payment.receiptFile.secureUrl)} style={styles.openButton}>
+                Open Full Size
+              </Button>
             </View>
-          </Card.Content>
-        </Card>
-
-        <Card style={styles.section} mode="outlined">
-          <Card.Content>
-            <Text variant="titleMedium" style={styles.sectionTitle}>
-              Details
-            </Text>
-            <Row label="Principal Paid" value={formatCurrency(payment.principalPaid)} />
-            <Row label="Interest Paid" value={formatCurrency(payment.interestPaid)} />
-            <Row label="Payment Mode" value={MODE_LABELS[payment.paymentMode] || payment.paymentMode} />
-            {payment.referenceNumber ? <Row label="Reference No." value={payment.referenceNumber} /> : null}
-            {payment.principalOutstandingAfter != null ? (
-              <Row label="Principal Outstanding After" value={formatCurrency(payment.principalOutstandingAfter)} />
-            ) : null}
-            {payment.remarks ? <Row label="Remarks" value={payment.remarks} /> : null}
-            {payment.recordedBy?.name ? <Row label="Recorded By" value={payment.recordedBy.name} /> : null}
-          </Card.Content>
-        </Card>
-
-        <Card style={[styles.section, styles.lastSection]} mode="outlined">
-          <Card.Content>
-            <Text variant="titleMedium" style={styles.sectionTitle}>
-              Receipt
-            </Text>
-            {payment.receiptFile?.secureUrl ? (
-              <View>
-                <Image source={{ uri: payment.receiptFile.secureUrl }} style={styles.receiptImage} resizeMode="cover" />
-                <Button
-                  mode="text"
-                  icon="open-in-new"
-                  onPress={() => Linking.openURL(payment.receiptFile.secureUrl)}
-                  style={styles.openButton}
-                >
-                  Open Full Size
+          ) : (
+            <View>
+              <Text style={styles.noReceiptText}>No receipt photo attached.</Text>
+              <View style={styles.receiptButtonsRow}>
+                <Button mode="outlined" icon="camera-outline" onPress={() => handleAttachReceipt(true)} loading={uploading} disabled={uploading} style={styles.receiptButton}>
+                  Camera
+                </Button>
+                <Button mode="outlined" icon="image-outline" onPress={() => handleAttachReceipt(false)} loading={uploading} disabled={uploading} style={styles.receiptButton}>
+                  Gallery
                 </Button>
               </View>
-            ) : (
-              <View>
-                <Text variant="bodyMedium" style={styles.noReceiptText}>
-                  No receipt attached.
-                </Text>
-                <View style={styles.receiptButtonsRow}>
-                  <Button
-                    mode="outlined"
-                    icon="camera-outline"
-                    onPress={() => handleAttachReceipt(true)}
-                    loading={uploading}
-                    disabled={uploading}
-                    style={styles.receiptButton}
-                  >
-                    Camera
-                  </Button>
-                  <Button
-                    mode="outlined"
-                    icon="image-outline"
-                    onPress={() => handleAttachReceipt(false)}
-                    loading={uploading}
-                    disabled={uploading}
-                    style={styles.receiptButton}
-                  >
-                    Gallery
-                  </Button>
-                </View>
-              </View>
-            )}
-          </Card.Content>
-        </Card>
+            </View>
+          )}
+        </View>
       </ScrollView>
 
       <Portal>
         <Dialog visible={deleteDialogVisible} onDismiss={() => setDeleteDialogVisible(false)}>
           <Dialog.Title>Delete Payment</Dialog.Title>
           <Dialog.Content>
-            <Text variant="bodyMedium">
-              This permanently reverses this payment's effect on the loan balance and interest ledger. This cannot be undone.
-            </Text>
+            <Text>This permanently reverses this payment's effect on the loan balance and interest ledger. This cannot be undone.</Text>
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={() => setDeleteDialogVisible(false)}>Cancel</Button>
-            <Button onPress={handleDelete} loading={deleting} disabled={deleting} textColor="#DC2626">
+            <Button onPress={handleDelete} loading={deleting} disabled={deleting} textColor={colors.coral}>
               Delete
             </Button>
           </Dialog.Actions>
@@ -247,38 +243,54 @@ export default function PaymentDetailsScreen({ route, navigation }) {
   );
 }
 
-function Row({ label, value }) {
+function ReceiptRow({ label, value }) {
   return (
-    <View style={styles.row}>
-      <Text variant="bodySmall" style={styles.rowLabel}>
-        {label}
-      </Text>
-      <Text variant="bodyMedium" style={styles.rowValue}>
-        {value}
-      </Text>
+    <View style={styles.receiptRow}>
+      <Text style={styles.receiptRowLabel}>{label}</Text>
+      <Text style={styles.receiptRowValue}>{value}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  flex: { flex: 1, backgroundColor: '#F5F7FA' },
-  content: { padding: 16, paddingBottom: 32 },
-  centered: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F5F7FA' },
-  headerCard: { marginBottom: 16 },
-  headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  headerText: { flex: 1 },
-  amount: { fontWeight: '700', color: '#0D9488' },
-  subLine: { marginTop: 4, color: '#3A4453' },
-  section: { marginBottom: 16 },
-  lastSection: { marginBottom: 0 },
-  sectionTitle: { fontWeight: '600', marginBottom: 8 },
-  row: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 8, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#E8EEF4' },
-  rowLabel: { color: '#6B7280', flex: 1 },
-  rowValue: { flex: 1, textAlign: 'right', fontWeight: '600' },
-  deleteText: { color: '#DC2626' },
-  receiptImage: { width: '100%', height: 220, borderRadius: 8, backgroundColor: '#E8EEF4' },
+  flex: { flex: 1, backgroundColor: colors.background },
+  content: { padding: spacing.lg, paddingBottom: 40 },
+  centered: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.background },
+  topBar: { flexDirection: 'row', justifyContent: 'flex-end', marginBottom: -8 },
+  receiptCard: { backgroundColor: colors.surface, borderRadius: radius.xl, padding: spacing.xl, alignItems: 'center', ...shadow.md },
+  successBadge: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: colors.teal,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.md,
+  },
+  receiptAmount: { ...typography.display, color: colors.ink },
+  receiptSub: { ...typography.bodyLarge, color: colors.inkMuted, marginTop: 4, fontWeight: '600' },
+  receiptDate: { ...typography.caption, color: colors.inkFaint, marginTop: 2 },
+  dashedDivider: {
+    width: '100%',
+    borderStyle: 'dashed',
+    borderWidth: 1,
+    borderColor: colors.border,
+    marginVertical: spacing.lg,
+  },
+  receiptRow: { flexDirection: 'row', justifyContent: 'space-between', width: '100%', paddingVertical: 6 },
+  receiptRowLabel: { ...typography.body, color: colors.inkMuted },
+  receiptRowValue: { ...typography.body, color: colors.ink, fontWeight: '700' },
+  receiptTotalRow: { flexDirection: 'row', justifyContent: 'space-between', width: '100%', paddingVertical: 8 },
+  receiptTotalLabel: { ...typography.h3, color: colors.ink },
+  receiptTotalValue: { ...typography.h3, color: colors.teal },
+  actionsRow: { flexDirection: 'row', marginTop: spacing.md, marginBottom: spacing.lg },
+  actionButton: { flex: 1, borderColor: colors.indigo },
+  section: { backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.lg, ...shadow.sm },
+  sectionTitle: { ...typography.h3, color: colors.ink, marginBottom: spacing.md },
+  receiptImage: { width: '100%', height: 220, borderRadius: radius.md, backgroundColor: colors.surfaceAlt },
   openButton: { alignSelf: 'flex-start', marginTop: 4 },
-  noReceiptText: { color: '#6B7280', marginBottom: 12 },
-  receiptButtonsRow: { flexDirection: 'row', gap: 12 },
-  receiptButton: { flex: 1, borderColor: '#4338CA' },
+  noReceiptText: { color: colors.inkMuted, marginBottom: spacing.md },
+  receiptButtonsRow: { flexDirection: 'row', gap: spacing.md },
+  receiptButton: { flex: 1, borderColor: colors.indigo },
+  deleteText: { color: colors.coral },
 });

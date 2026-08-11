@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
-import { TextInput, Button, Text, HelperText, Menu, ActivityIndicator, Banner } from 'react-native-paper';
+import { TextInput, Button, Text, HelperText, Menu, ActivityIndicator } from 'react-native-paper';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { paymentApi } from '../../api/paymentApi';
 import { getErrorMessage } from '../../utils/errors';
+import { colors, radius, shadow, typography, spacing } from '../../theme/tokens';
 
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -65,11 +67,7 @@ export default function PaymentEditScreen({ route, navigation }) {
     setError('');
     setSubmitting(true);
     try {
-      const payload = {
-        principalPaid: Number(principalPaid) || 0,
-        interestPaid: Number(interestPaid) || 0,
-        paymentMode,
-      };
+      const payload = { principalPaid: Number(principalPaid) || 0, interestPaid: Number(interestPaid) || 0, paymentMode };
       if (paymentDate) payload.paymentDate = paymentDate;
       payload.referenceNumber = referenceNumber.trim();
       payload.remarks = remarks.trim();
@@ -85,7 +83,7 @@ export default function PaymentEditScreen({ route, navigation }) {
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#4338CA" />
+        <ActivityIndicator size="large" color={colors.indigo} />
       </View>
     );
   }
@@ -95,33 +93,14 @@ export default function PaymentEditScreen({ route, navigation }) {
   return (
     <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-        <Banner visible icon="information-outline" style={styles.banner}>
-          Editing re-runs interest allocation from scratch — any months this payment cleared may shift.
-        </Banner>
+        <View style={styles.notice}>
+          <MaterialCommunityIcons name="information-outline" size={18} color={colors.indigo} />
+          <Text style={styles.noticeText}>Editing re-runs interest allocation from scratch — any months this payment cleared may shift.</Text>
+        </View>
 
-        <TextInput
-          label="Principal Paid (₹)"
-          value={principalPaid}
-          onChangeText={setPrincipalPaid}
-          mode="outlined"
-          keyboardType="numeric"
-          style={styles.input}
-        />
-        <TextInput
-          label="Interest Paid (₹)"
-          value={interestPaid}
-          onChangeText={setInterestPaid}
-          mode="outlined"
-          keyboardType="numeric"
-          style={styles.input}
-        />
-        <TextInput
-          label="Payment Date (YYYY-MM-DD)"
-          value={paymentDate}
-          onChangeText={setPaymentDate}
-          mode="outlined"
-          style={styles.input}
-        />
+        <TextInput label="Principal Paid (₹)" value={principalPaid} onChangeText={setPrincipalPaid} mode="outlined" keyboardType="numeric" style={styles.input} />
+        <TextInput label="Interest Paid (₹)" value={interestPaid} onChangeText={setInterestPaid} mode="outlined" keyboardType="numeric" style={styles.input} />
+        <TextInput label="Payment Date (YYYY-MM-DD)" value={paymentDate} onChangeText={setPaymentDate} mode="outlined" style={styles.input} />
 
         <Menu
           visible={modeMenuVisible}
@@ -139,29 +118,14 @@ export default function PaymentEditScreen({ route, navigation }) {
           }
         >
           {PAYMENT_MODES.map((m) => (
-            <Menu.Item
-              key={m.value}
-              title={m.label}
-              onPress={() => {
-                setPaymentMode(m.value);
-                setModeMenuVisible(false);
-              }}
-            />
+            <Menu.Item key={m.value} title={m.label} onPress={() => { setPaymentMode(m.value); setModeMenuVisible(false); }} />
           ))}
         </Menu>
 
-        <TextInput
-          label="Reference Number"
-          value={referenceNumber}
-          onChangeText={setReferenceNumber}
-          mode="outlined"
-          style={styles.input}
-        />
+        <TextInput label="Reference Number" value={referenceNumber} onChangeText={setReferenceNumber} mode="outlined" style={styles.input} />
         <TextInput label="Remarks" value={remarks} onChangeText={setRemarks} mode="outlined" multiline numberOfLines={2} style={styles.input} />
 
-        <HelperText type="error" visible={!!error}>
-          {error}
-        </HelperText>
+        <HelperText type="error" visible={!!error}>{error}</HelperText>
 
         <Button mode="contained" onPress={handleSubmit} loading={submitting} disabled={submitting} style={styles.submitButton}>
           Save Changes
@@ -172,10 +136,19 @@ export default function PaymentEditScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  flex: { flex: 1 },
-  container: { padding: 16, paddingBottom: 32 },
-  centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  banner: { marginBottom: 16, borderRadius: 8, overflow: 'hidden' },
-  input: { marginBottom: 12 },
-  submitButton: { marginTop: 8, paddingVertical: 4 },
+  flex: { flex: 1, backgroundColor: colors.background },
+  centered: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.background },
+  container: { padding: spacing.lg, paddingBottom: 40 },
+  notice: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+    backgroundColor: colors.indigoSurface,
+    borderRadius: radius.md,
+    padding: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  noticeText: { ...typography.caption, color: colors.indigo, flex: 1, lineHeight: 17 },
+  input: { marginBottom: spacing.md, backgroundColor: colors.surface },
+  submitButton: { marginTop: spacing.sm, paddingVertical: 4 },
 });

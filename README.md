@@ -156,6 +156,10 @@ A full visual redesign is now underway, separate from the feature roadmap above.
 - **Loan Detail rebuilt** — the screen your brief called out as needing the most attention: a `RepaymentProgress` bar (% repaid, computed from `loanAmount`/`principalOutstanding`), a clean info grid, and a `RepaymentTimeline` — a vertical timeline from "Loan Issued" through every payment down to "Remaining", matching your brief's spec exactly.
 - **Interest Schedule rebuilt**: each month is now its own card with a tinted month badge, status badge, principal/rate at time of charge, and due/paid dates — the "monthly interest tracking" section from your brief.
 
-**Still ahead** (per the 16-phase brief): Payments screen + payment receipts, multi-step Add Payment / Add Loan flows, Documents screen redesign, search/filter experience, skeleton loading states, and animation/micro-interaction polish. Say "next phase" to continue in the same order as the rest of this build.
+- **Payments rebuilt**: `PaymentCard` list rows, a collections summary card (Total/Principal/Interest/Count) with time-range pill filters, and a genuine **4-step Add Payment wizard** — Amount → Allocate (with a smart auto-split against pending interest first, live "unallocated/over-allocated" balance check) → Method (+ receipt photo) → Review — plus a **receipt-style Payment Detail** screen: dashed-divider layout, big success badge, Share Receipt (native share sheet with a formatted text receipt).
+- The **Add Loan flow** is a matching 3-step wizard: Select Borrower → Loan Details → Review, with a full summary before submit.
+- Swept the remaining borrower/loan picker screens (`SelectBorrowerScreen`, `SelectBorrowerForPaymentScreen`, `SelectLoanForPaymentScreen`) and `PaymentEditScreen`/`BorrowerFormScreen` onto the new design tokens for full visual consistency — every borrower/loan picker in the app now renders the same premium `BorrowerCard`/`LoanCard`.
+
+**Still ahead** (per the 16-phase brief): Documents screen redesign, global search experience, skeleton loading states, and animation/micro-interaction polish. Reports & Analytics (added after your original brief) could also get the same treatment if you'd like. Say "next phase" to continue.
 
 **New native dependency**: `expo-linear-gradient` (for the hero gradient). Run `npx expo install --fix` after pulling this update.

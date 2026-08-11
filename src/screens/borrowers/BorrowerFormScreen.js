@@ -3,6 +3,7 @@ import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 're
 import { TextInput, Button, Text, HelperText, Menu, ActivityIndicator } from 'react-native-paper';
 import { borrowerApi } from '../../api/borrowerApi';
 import { getErrorMessage } from '../../utils/errors';
+import { colors, radius, typography, spacing } from '../../theme/tokens';
 
 const ID_PROOF_TYPES = [
   { value: 'aadhaar', label: 'Aadhaar' },
@@ -106,7 +107,7 @@ export default function BorrowerFormScreen({ route, navigation }) {
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#4338CA" />
+        <ActivityIndicator size="large" color={colors.indigo} />
       </View>
     );
   }
@@ -230,10 +231,10 @@ export default function BorrowerFormScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  flex: { flex: 1 },
-  container: { padding: 16, paddingBottom: 32 },
-  centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  sectionLabel: { marginTop: 8, marginBottom: 8, color: '#4338CA', fontWeight: '700' },
-  input: { marginBottom: 12 },
-  submitButton: { marginTop: 8, paddingVertical: 4 },
+  flex: { flex: 1, backgroundColor: colors.background },
+  container: { padding: spacing.lg, paddingBottom: 40 },
+  centered: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.background },
+  sectionLabel: { ...typography.h3, fontSize: 15, marginTop: spacing.sm, marginBottom: spacing.sm, color: colors.indigo },
+  input: { marginBottom: spacing.md, backgroundColor: colors.surface },
+  submitButton: { marginTop: spacing.sm, paddingVertical: 4 },
 });
