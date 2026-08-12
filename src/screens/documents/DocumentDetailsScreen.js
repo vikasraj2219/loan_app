@@ -190,7 +190,7 @@ function Row({ label, value }) {
 
 const styles = StyleSheet.create({
   flex: { flex: 1, backgroundColor: '#F5F7FA' },
-  content: { padding: 16, paddingBottom: 32 },
+  content: { padding: 16, paddingBottom: 110 },
   headerCard: { marginBottom: 16 },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   headerText: { flex: 1 },

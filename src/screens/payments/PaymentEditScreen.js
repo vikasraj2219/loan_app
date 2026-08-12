@@ -138,7 +138,7 @@ export default function PaymentEditScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   flex: { flex: 1, backgroundColor: colors.background },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.background },
-  container: { padding: spacing.lg, paddingBottom: 40 },
+  container: { padding: spacing.lg, paddingBottom: 110 },
   notice: {
     flexDirection: 'row',
     alignItems: 'flex-start',

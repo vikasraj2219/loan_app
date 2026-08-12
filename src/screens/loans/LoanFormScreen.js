@@ -234,7 +234,7 @@ function ReviewRow({ label, value, emphasize }) {
 const styles = StyleSheet.create({
   flex: { flex: 1, backgroundColor: colors.background },
   progressWrap: { paddingHorizontal: spacing.lg, paddingTop: spacing.lg, paddingBottom: spacing.sm, backgroundColor: colors.background },
-  container: { padding: spacing.lg, paddingBottom: 40 },
+  container: { padding: spacing.lg, paddingBottom: 110 },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.background },
   stepTitle: { ...typography.h2, color: colors.ink, marginBottom: spacing.xs },
   stepSubtitle: { ...typography.body, color: colors.inkMuted, marginBottom: spacing.md },

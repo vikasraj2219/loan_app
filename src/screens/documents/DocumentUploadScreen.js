@@ -213,7 +213,7 @@ export default function DocumentUploadScreen({ route, navigation }) {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  container: { padding: 16, paddingBottom: 32 },
+  container: { padding: 16, paddingBottom: 110 },
   sectionLabel: { marginTop: 8, marginBottom: 8, color: '#4338CA', fontWeight: '700' },
   segmented: { marginBottom: 12 },
   selectButton: { marginBottom: 4, borderColor: '#4338CA' },

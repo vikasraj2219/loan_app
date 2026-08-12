@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
   flex: { flex: 1, backgroundColor: '#F5F7FA' },
   filterRow: { padding: 16, paddingBottom: 8, backgroundColor: '#fff' },
   loader: { marginTop: 48 },
-  content: { padding: 16, paddingBottom: 32 },
+  content: { padding: 16, paddingBottom: 110 },
   legendRow: { flexDirection: 'row', gap: 16, marginBottom: 12 },
   legendItem: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   legendDot: { width: 10, height: 10, borderRadius: 5 },

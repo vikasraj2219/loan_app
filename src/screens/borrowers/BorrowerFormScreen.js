@@ -232,7 +232,7 @@ export default function BorrowerFormScreen({ route, navigation }) {
 
 const styles = StyleSheet.create({
   flex: { flex: 1, backgroundColor: colors.background },
-  container: { padding: spacing.lg, paddingBottom: 40 },
+  container: { padding: spacing.lg, paddingBottom: 110 },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.background },
   sectionLabel: { ...typography.h3, fontSize: 15, marginTop: spacing.sm, marginBottom: spacing.sm, color: colors.indigo },
   input: { marginBottom: spacing.md, backgroundColor: colors.surface },

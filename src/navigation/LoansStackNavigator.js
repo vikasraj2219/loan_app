@@ -4,6 +4,7 @@ import LoanDetailsScreen from '../screens/loans/LoanDetailsScreen';
 import LoanFormScreen from '../screens/loans/LoanFormScreen';
 import SelectBorrowerScreen from '../screens/loans/SelectBorrowerScreen';
 import InterestScheduleScreen from '../screens/loans/InterestScheduleScreen';
+import InterestRecordFormScreen from '../screens/loans/InterestRecordFormScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -29,6 +30,7 @@ export default function LoansStackNavigator() {
         component={InterestScheduleScreen}
         options={({ route }) => ({ title: route.params?.borrowerName ? `${route.params.borrowerName} · Interest` : 'Interest Schedule' })}
       />
+      <Stack.Screen name="InterestRecordForm" component={InterestRecordFormScreen} />
     </Stack.Navigator>
   );
 }

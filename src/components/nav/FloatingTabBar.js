@@ -3,6 +3,7 @@ import { View, StyleSheet, Pressable, Animated } from 'react-native';
 import { Text } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { CommonActions } from '@react-navigation/native';
 import { colors, radius, shadow, typography } from '../../theme/tokens';
 
 const ICONS = {
@@ -45,17 +46,6 @@ function TabButton({ route, isFocused, onPress, label }) {
 export default function FloatingTabBar({ state, descriptors, navigation }) {
   const insets = useSafeAreaInsets();
 
-  // When the focused tab is a nested stack (Borrowers/Loans/Payments/More),
-  // only show the floating bar at that stack's root screen — hide it once
-  // the user has drilled into a detail/form screen so it never sits on top
-  // of content or a submit button. Dashboard has no nested stack, so it's
-  // always at "index 0" and the bar always shows there.
-  const activeRoute = state.routes[state.index];
-  const nestedState = activeRoute.state;
-  const isAtNestedRoot = !nestedState || nestedState.index === 0;
-
-  if (!isAtNestedRoot) return null;
-
   return (
     <View style={[styles.wrapper, { paddingBottom: Math.max(insets.bottom, 12) }]} pointerEvents="box-none">
       <View style={styles.bar}>
@@ -66,7 +56,20 @@ export default function FloatingTabBar({ state, descriptors, navigation }) {
 
           const onPress = () => {
             const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
-            if (!isFocused && !event.defaultPrevented) {
+            if (event.defaultPrevented) return;
+
+            if (isFocused) {
+              // Tapping the already-active tab pops its nested stack back to
+              // root — standard tab-bar behavior, and the only way back to
+              // a list screen from deep inside a stack without the back button.
+              const tabState = route.state;
+              if (tabState && tabState.index > 0) {
+                navigation.dispatch({
+                  ...CommonActions.reset({ index: 0, routes: [{ name: tabState.routes[0].name }] }),
+                  target: tabState.key,
+                });
+              }
+            } else {
               navigation.navigate(route.name);
             }
           };

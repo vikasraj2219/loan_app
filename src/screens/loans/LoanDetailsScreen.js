@@ -1,8 +1,10 @@
 import { useCallback, useState } from 'react';
-import { View, StyleSheet, ScrollView, RefreshControl } from 'react-native';
-import { Text, ActivityIndicator, Menu, IconButton, Banner } from 'react-native-paper';
+import { View, StyleSheet, ScrollView, RefreshControl, Pressable } from 'react-native';
+import { Text, ActivityIndicator, Menu, IconButton, Banner, Dialog, Portal, Button } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { loanApi } from '../../api/loanApi';
+import { paymentApi } from '../../api/paymentApi';
 import { useAuth } from '../../context/AuthContext';
 import ErrorState from '../../components/ErrorState';
 import EmptyState from '../../components/EmptyState';
@@ -23,6 +25,8 @@ export default function LoanDetailsScreen({ route, navigation }) {
   const [actionError, setActionError] = useState('');
   const [menuVisible, setMenuVisible] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
+  const [deletePaymentTarget, setDeletePaymentTarget] = useState(null);
+  const [deletingPayment, setDeletingPayment] = useState(false);
 
   const loadLoan = useCallback(
     async (isRefresh = false) => {
@@ -73,6 +77,21 @@ export default function LoanDetailsScreen({ route, navigation }) {
       setActionError(getErrorMessage(err, 'Could not mark loan overdue.'));
     } finally {
       setActionLoading(false);
+    }
+  };
+
+  const handleDeletePayment = async () => {
+    if (!deletePaymentTarget) return;
+    setDeletingPayment(true);
+    try {
+      await paymentApi.remove(deletePaymentTarget._id);
+      setDeletePaymentTarget(null);
+      loadLoan();
+    } catch (err) {
+      setDeletePaymentTarget(null);
+      setActionError(getErrorMessage(err, 'Could not delete payment.'));
+    } finally {
+      setDeletingPayment(false);
     }
   };
 
@@ -194,7 +213,23 @@ export default function LoanDetailsScreen({ route, navigation }) {
 
         {/* Repayment timeline */}
         <View style={[styles.sectionCard, styles.lastSection]}>
-          <Text style={styles.sectionTitle}>Repayment Timeline</Text>
+          <View style={styles.sectionHeadingRow}>
+            <Text style={styles.sectionTitle}>Payment Records</Text>
+            {loan.status !== 'closed' && (
+              <Pressable
+                style={styles.addRecordButton}
+                onPress={() =>
+                  navigation.navigate('Payments', {
+                    screen: 'PaymentForm',
+                    params: { loanId: id, borrowerName: loan.borrower?.name, principalOutstanding: loan.principalOutstanding },
+                  })
+                }
+              >
+                <MaterialCommunityIcons name="plus" size={16} color={colors.indigo} />
+                <Text style={styles.addRecordText}>Record Payment</Text>
+              </Pressable>
+            )}
+          </View>
           {payments.length === 0 ? (
             <EmptyState icon="cash-remove" title="No payments yet" description="Record a payment to start tracking repayments." />
           ) : (
@@ -203,10 +238,34 @@ export default function LoanDetailsScreen({ route, navigation }) {
               loanDate={loan.loanDate}
               payments={payments}
               remaining={loan.principalOutstanding}
+              onPressPayment={(p) =>
+                navigation.navigate('Payments', { screen: 'PaymentDetails', params: { id: p._id, borrowerName: loan.borrower?.name } })
+              }
+              onEdit={
+                isAdmin
+                  ? (p) => navigation.navigate('Payments', { screen: 'PaymentEdit', params: { id: p._id } })
+                  : undefined
+              }
+              onDelete={isAdmin ? (p) => setDeletePaymentTarget(p) : undefined}
             />
           )}
         </View>
       </ScrollView>
+
+      <Portal>
+        <Dialog visible={!!deletePaymentTarget} onDismiss={() => setDeletePaymentTarget(null)}>
+          <Dialog.Title>Delete Payment</Dialog.Title>
+          <Dialog.Content>
+            <Text>This permanently reverses this payment's effect on the loan balance and interest ledger. This cannot be undone.</Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setDeletePaymentTarget(null)}>Cancel</Button>
+            <Button onPress={handleDeletePayment} loading={deletingPayment} disabled={deletingPayment} textColor={colors.coral}>
+              Delete
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </View>
   );
 }
@@ -225,7 +284,7 @@ function InfoTile({ label, value, tone }) {
 
 const styles = StyleSheet.create({
   flex: { flex: 1, backgroundColor: colors.background },
-  content: { padding: spacing.lg, paddingBottom: 40 },
+  content: { padding: spacing.lg, paddingBottom: 110 },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.background },
   headerCard: { backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.lg, marginBottom: spacing.md, ...shadow.sm },
   headerTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
@@ -236,6 +295,9 @@ const styles = StyleSheet.create({
   sectionCard: { backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.lg, marginBottom: spacing.md, ...shadow.sm },
   lastSection: { marginBottom: 0 },
   sectionTitle: { ...typography.h3, color: colors.ink, marginBottom: spacing.md },
+  sectionHeadingRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md },
+  addRecordButton: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  addRecordText: { ...typography.label, color: colors.indigo, fontWeight: '700' },
   infoGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
   infoTile: { width: '48%', marginBottom: spacing.md },
   infoLabel: { ...typography.caption, color: colors.inkFaint, marginBottom: 3 },

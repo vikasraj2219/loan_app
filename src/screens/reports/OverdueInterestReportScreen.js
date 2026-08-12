@@ -115,7 +115,7 @@ function SummaryItem({ label, value, color = '#4338CA', full }) {
 const styles = StyleSheet.create({
   flex: { flex: 1, backgroundColor: '#F5F7FA' },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F5F7FA' },
-  content: { padding: 16, paddingBottom: 32 },
+  content: { padding: 16, paddingBottom: 110 },
   summaryCard: { marginBottom: 16 },
   summaryRow: { flexDirection: 'row' },
   summaryItem: { flex: 1 },

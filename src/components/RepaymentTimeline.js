@@ -1,12 +1,15 @@
 import { View, StyleSheet, Pressable } from 'react-native';
-import { Text } from 'react-native-paper';
+import { Text, IconButton } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { colors, radius, typography, spacing } from '../theme/tokens';
 import { formatCurrency, formatDate } from '../utils/format';
 
 // payments: newest-first (as returned by the API) — this component reverses
 // them to show chronological order, issued loan at top.
-export default function RepaymentTimeline({ loanAmount, loanDate, payments, remaining, onPressPayment }) {
+// onEdit/onDelete are optional (admin-only) — when provided, each payment
+// node gets inline pencil/trash actions, matching the Interest Records row
+// pattern, so payments can be managed right from this timeline.
+export default function RepaymentTimeline({ loanAmount, loanDate, payments, remaining, onPressPayment, onEdit, onDelete }) {
   const chronological = [...payments].reverse();
 
   return (
@@ -21,6 +24,8 @@ export default function RepaymentTimeline({ loanAmount, loanDate, payments, rema
           value={`-${formatCurrency((p.principalPaid || 0) + (p.interestPaid || 0))}`}
           tone="teal"
           onPress={onPressPayment ? () => onPressPayment(p) : undefined}
+          onEdit={onEdit ? () => onEdit(p) : undefined}
+          onDelete={onDelete ? () => onDelete(p) : undefined}
         />
       ))}
       <TimelineNode icon="flag-checkered" label="Remaining" value={formatCurrency(remaining)} tone={remaining > 0 ? 'amber' : 'teal'} isLast />
@@ -30,12 +35,13 @@ export default function RepaymentTimeline({ loanAmount, loanDate, payments, rema
 
 const TONE_COLOR = { indigo: colors.indigo, teal: colors.teal, amber: colors.amber };
 
-function TimelineNode({ icon, label, caption, value, tone, isFirst, isLast, onPress }) {
+function TimelineNode({ icon, label, caption, value, tone, isFirst, isLast, onPress, onEdit, onDelete }) {
   const Wrapper = onPress ? Pressable : View;
   const dotColor = TONE_COLOR[tone] || colors.indigo;
+  const hasActions = onEdit || onDelete;
 
   return (
-    <Wrapper style={styles.row} onPress={onPress}>
+    <View style={styles.row}>
       <View style={styles.railCol}>
         {!isFirst && <View style={styles.railSegmentTop} />}
         <View style={[styles.dot, { backgroundColor: dotColor }]}>
@@ -43,14 +49,22 @@ function TimelineNode({ icon, label, caption, value, tone, isFirst, isLast, onPr
         </View>
         {!isLast && <View style={styles.railSegmentBottom} />}
       </View>
-      <View style={styles.content}>
+      <Wrapper style={styles.content} onPress={onPress}>
         <View style={styles.contentTop}>
           <Text style={styles.label}>{label}</Text>
-          <Text style={[styles.value, { color: dotColor }]}>{value}</Text>
+          <View style={styles.rightSide}>
+            <Text style={[styles.value, { color: dotColor }]}>{value}</Text>
+            {hasActions && (
+              <View style={styles.actions}>
+                {onEdit && <IconButton icon="pencil-outline" size={15} style={styles.actionButton} onPress={onEdit} />}
+                {onDelete && <IconButton icon="delete-outline" size={15} style={styles.actionButton} iconColor={colors.coral} onPress={onDelete} />}
+              </View>
+            )}
+          </View>
         </View>
         {caption ? <Text style={styles.caption}>{caption}</Text> : null}
-      </View>
-    </Wrapper>
+      </Wrapper>
+    </View>
   );
 }
 
@@ -63,6 +77,9 @@ const styles = StyleSheet.create({
   content: { flex: 1, paddingBottom: spacing.lg, paddingLeft: spacing.sm },
   contentTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   label: { ...typography.bodyLarge, color: colors.ink, fontWeight: '700' },
+  rightSide: { flexDirection: 'row', alignItems: 'center' },
   value: { ...typography.bodyLarge, fontWeight: '700' },
+  actions: { flexDirection: 'row', marginLeft: 2 },
+  actionButton: { margin: 0, width: 26, height: 26 },
   caption: { ...typography.caption, color: colors.inkMuted, marginTop: 2 },
 });

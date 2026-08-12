@@ -176,7 +176,7 @@ function SummaryCard({ label, value, color = '#3A4453' }) {
 const styles = StyleSheet.create({
   flex: { flex: 1, backgroundColor: '#F5F7FA' },
   loader: { marginTop: 48 },
-  content: { padding: 16, paddingBottom: 32 },
+  content: { padding: 16, paddingBottom: 110 },
   statsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 12 },
   summaryCard: { flexBasis: '48%' },
   summaryCardContent: { paddingVertical: 10 },

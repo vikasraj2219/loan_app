@@ -306,7 +306,7 @@ function ConfirmRow({ label, value, emphasize }) {
 const styles = StyleSheet.create({
   flex: { flex: 1, backgroundColor: colors.background },
   progressWrap: { paddingHorizontal: spacing.lg, paddingTop: spacing.lg, paddingBottom: spacing.sm, backgroundColor: colors.background },
-  container: { padding: spacing.lg, paddingBottom: 40 },
+  container: { padding: spacing.lg, paddingBottom: 110 },
   contextCard: { backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.lg, marginBottom: spacing.lg, ...shadow.sm },
   contextName: { ...typography.h3, color: colors.ink },
   contextRow: { flexDirection: 'row', marginTop: spacing.md },

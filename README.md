@@ -162,4 +162,26 @@ A full visual redesign is now underway, separate from the feature roadmap above.
 
 **Still ahead** (per the 16-phase brief): Documents screen redesign, global search experience, skeleton loading states, and animation/micro-interaction polish. Reports & Analytics (added after your original brief) could also get the same treatment if you'd like. Say "next phase" to continue.
 
+## Fixes — Payment Records, Dashboard Notch, Navigation
+
+**Payment Records on Loan Detail.** The repayment timeline now has full record management, matching the Interest Records pattern:
+- Tap any payment to open its full detail (receipt, share, everything already built in Payments)
+- Admin-only inline **pencil/trash** icons directly on each timeline entry — edit or delete without leaving the loan
+- A **"Record Payment"** shortcut in the section header, same pattern as "Add Record" on Interest Schedule
+
+**Dashboard content merging into the notch.** The Dashboard tab has no native header (by design, for the custom hero), so it wasn't accounting for the status bar / notch / Dynamic Island area — the greeting text was rendering underneath it. Fixed by adding proper top safe-area padding.
+
+**Navigation trap (the real "not working properly" bug).** The floating tab bar was set to auto-hide once you opened any detail or form screen — meant to avoid covering content, but it meant that once you drilled into e.g. a Loan Detail page, **the tab bar disappeared and there was no way to jump to another tab** except backing out screen-by-screen first. That's fixed:
+- The tab bar is now **always visible**, on every screen
+- Every screen's bottom padding was increased so the bar never covers content or buttons
+- Tapping the **already-active tab's icon now pops that tab's stack back to its list/root screen** — the standard behavior you'd expect (e.g., deep inside Loan Detail, tapping the Loans icon takes you straight back to the Loans list, not just "do nothing since already on Loans")
+
+## Fix — Manual Interest Generation & Record Management
+
+The web app's Interest Summary screen has an "Add Record" button and a Pending Interest Table with edit/delete on each row — this existed on your backend (`POST /interest/generate`, and full CRUD at `/interest-records`) but was never wired into the mobile app. Fixed on the Loan Detail → Interest Schedule screen (admin-only, matching your backend's `authorize('admin')` on these routes):
+
+- **"Generate Missing Interest Records"** button — backfills every month owed for that loan up to today in one tap (e.g., a loan created Jan 10 2026 with no interest generated yet). Safe to tap repeatedly — the backend skips months that already exist rather than duplicating them, and shows you a summary (created / skipped / failed) afterward.
+- **Add Record** — manually add a specific month's interest record (for historical/migration entries). Amount, principal, and rate can be left blank to auto-calculate from the loan, exactly like the backend does.
+- **Edit / Delete** on each month row, matching the web app's pending interest table exactly.
+
 **New native dependency**: `expo-linear-gradient` (for the hero gradient). Run `npx expo install --fix` after pulling this update.
