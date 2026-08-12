@@ -135,7 +135,7 @@ export default function DocumentsScreen({ navigation }) {
         />
       )}
 
-      <FAB icon="plus" style={styles.fab} label="Upload" onPress={() => navigation.navigate('DocumentUpload')} />
+      <FAB icon="plus" color="#FFFFFF" style={styles.fab} label="Upload" onPress={() => navigation.navigate('DocumentUpload')} />
     </View>
   );
 }

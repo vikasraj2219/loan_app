@@ -9,7 +9,7 @@ function SplashLoading() {
   return (
     <View style={styles.splash}>
       <ActivityIndicator size="large" color="#4338CA" />
-      <Text style={styles.splashText}>Loading Loan Manager…</Text>
+      <Text style={styles.splashText}>Loading Waghmare Vikas…</Text>
     </View>
   );
 }

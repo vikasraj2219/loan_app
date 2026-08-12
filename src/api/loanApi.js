@@ -8,4 +8,5 @@ export const loanApi = {
   close: (id) => api.patch(`/loans/${id}/close`),
   markOverdue: (id) => api.patch(`/loans/${id}/mark-overdue`),
   getInterestSchedule: (id) => api.get(`/loans/${id}/interest`),
+  remove: (id) => api.delete(`/loans/${id}`),
 };

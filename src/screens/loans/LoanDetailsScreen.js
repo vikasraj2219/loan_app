@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { View, StyleSheet, ScrollView, RefreshControl, Pressable } from 'react-native';
-import { Text, ActivityIndicator, Menu, IconButton, Banner, Dialog, Portal, Button } from 'react-native-paper';
+import { Text, ActivityIndicator, Menu, IconButton, Banner, Dialog, Portal, Button, TextInput, Divider } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { loanApi } from '../../api/loanApi';
@@ -27,6 +27,9 @@ export default function LoanDetailsScreen({ route, navigation }) {
   const [actionLoading, setActionLoading] = useState(false);
   const [deletePaymentTarget, setDeletePaymentTarget] = useState(null);
   const [deletingPayment, setDeletingPayment] = useState(false);
+  const [deleteLoanDialogVisible, setDeleteLoanDialogVisible] = useState(false);
+  const [deleteLoanConfirmText, setDeleteLoanConfirmText] = useState('');
+  const [deletingLoan, setDeletingLoan] = useState(false);
 
   const loadLoan = useCallback(
     async (isRefresh = false) => {
@@ -92,6 +95,21 @@ export default function LoanDetailsScreen({ route, navigation }) {
       setActionError(getErrorMessage(err, 'Could not delete payment.'));
     } finally {
       setDeletingPayment(false);
+    }
+  };
+
+  const handleDeleteLoan = async () => {
+    setDeletingLoan(true);
+    try {
+      await loanApi.remove(id);
+      setDeleteLoanDialogVisible(false);
+      navigation.goBack();
+    } catch (err) {
+      setActionError(getErrorMessage(err, 'Could not delete loan.'));
+      setDeleteLoanDialogVisible(false);
+    } finally {
+      setDeletingLoan(false);
+      setDeleteLoanConfirmText('');
     }
   };
 
@@ -181,6 +199,20 @@ export default function LoanDetailsScreen({ route, navigation }) {
               {isAdmin && loan.status === 'active' && (
                 <Menu.Item leadingIcon="alert-outline" title="Mark Overdue" onPress={handleMarkOverdue} />
               )}
+              {isAdmin && (
+                <>
+                  <Divider />
+                  <Menu.Item
+                    leadingIcon="delete-forever-outline"
+                    title="Delete Loan"
+                    titleStyle={styles.deleteMenuText}
+                    onPress={() => {
+                      setMenuVisible(false);
+                      setDeleteLoanDialogVisible(true);
+                    }}
+                  />
+                </>
+              )}
             </Menu>
           </View>
           <StatusChip status={loan.status} />
@@ -265,6 +297,50 @@ export default function LoanDetailsScreen({ route, navigation }) {
             </Button>
           </Dialog.Actions>
         </Dialog>
+
+        <Dialog
+          visible={deleteLoanDialogVisible}
+          onDismiss={() => {
+            setDeleteLoanDialogVisible(false);
+            setDeleteLoanConfirmText('');
+          }}
+        >
+          <Dialog.Title style={styles.deleteDialogTitle}>Delete Loan Permanently</Dialog.Title>
+          <Dialog.Content>
+            <Text style={styles.deleteDialogText}>
+              This permanently deletes this loan for {loan.borrower?.name}, along with every payment ({payments.length}) and interest
+              record tied to it. This cannot be undone.
+            </Text>
+            <Text style={styles.deleteDialogPrompt}>Type DELETE to confirm:</Text>
+            <TextInput
+              mode="outlined"
+              value={deleteLoanConfirmText}
+              onChangeText={setDeleteLoanConfirmText}
+              autoCapitalize="characters"
+              autoCorrect={false}
+              placeholder="DELETE"
+              style={styles.deleteDialogInput}
+            />
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button
+              onPress={() => {
+                setDeleteLoanDialogVisible(false);
+                setDeleteLoanConfirmText('');
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onPress={handleDeleteLoan}
+              loading={deletingLoan}
+              disabled={deletingLoan || deleteLoanConfirmText.trim() !== 'DELETE'}
+              textColor={colors.coral}
+            >
+              Delete Forever
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
       </Portal>
     </View>
   );
@@ -305,4 +381,9 @@ const styles = StyleSheet.create({
   notesBlock: { marginTop: spacing.sm, paddingTop: spacing.md, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border },
   notesLabel: { ...typography.caption, color: colors.inkFaint, marginBottom: 4 },
   notesText: { ...typography.body, color: colors.ink },
+  deleteMenuText: { color: colors.coral },
+  deleteDialogTitle: { color: colors.coral },
+  deleteDialogText: { ...typography.body, color: colors.ink, marginBottom: spacing.md },
+  deleteDialogPrompt: { ...typography.caption, color: colors.inkMuted, marginBottom: 6, fontWeight: '700' },
+  deleteDialogInput: { backgroundColor: colors.surface },
 });

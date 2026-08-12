@@ -152,7 +152,7 @@ export default function PaymentsScreen({ navigation }) {
         />
       )}
 
-      <FAB icon="receipt" style={styles.fab} label="Record" onPress={() => navigation.navigate('SelectBorrowerForPayment')} />
+      <FAB icon="receipt" color="#FFFFFF" style={styles.fab} label="Record" onPress={() => navigation.navigate('SelectBorrowerForPayment')} />
     </View>
   );
 }

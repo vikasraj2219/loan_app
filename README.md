@@ -115,6 +115,19 @@ Fix anything `expo-doctor` flags before building — it's much faster to catch a
 
 The build runs on Expo's servers (free tier: a limited number of builds/month). When it finishes, EAS gives you a download link — open it on your Android phone (or download and transfer the `.apk`) and install it directly (you'll need to allow "install from unknown sources" once).
 
+## Fix — Branding, Delete Loan, Button Visibility
+
+**Logo & branding.** App icon, Android adaptive icon, splash screen, and web favicon are now generated from your uploaded Waghmare Vikas logo (the circular monogram, cropped from the full lockup). App name changed from "Loan Manager" to "Waghmare Vikas" throughout — splash screen, login screen, `app.json`.
+
+**Delete Loan — real backend change, needs your action.** Your backend had no delete endpoint for loans at all (by design — it uses `close` to preserve the audit trail). Since you confirmed you want a genuine permanent-delete feature, I added:
+
+- `DELETE /api/v1/loans/:id` (admin-only) — cascades to permanently delete every `Payment` and `MonthlyInterest` record for that loan, and every loan-scoped `Document` (including its Cloudinary file), then the loan itself. Logged to your activity log as `loan.delete.permanent`.
+- Mobile: **Delete Loan** in the Loan Detail menu (admin-only), behind a "type DELETE to confirm" dialog that also tells you exactly how many payments will go with it.
+
+**This backend change is not live yet.** I can only edit your backend's source code here, not deploy it — you'll need to apply the two changed files (`src/controllers/loanController.js`, `src/routes/loanRoutes.js`, provided as a separate download) to your backend repo and redeploy to Render yourself. Until you do, tapping "Delete Loan" in the app will fail with a 404, since the endpoint won't exist on the live server yet.
+
+**Button visibility audit.** Found a real bug: every `FAB` (the floating "+" button on Borrowers/Loans/Payments/Documents) was rendering its label using React Native Paper's default `onPrimaryContainer` color, which I'd never overridden in the theme — so it was falling back to Paper's stock near-black color on our dark indigo button, making the label hard to read. Fixed by setting an explicit white color on all 4 FABs, and added the missing `onPrimaryContainer`/`onSecondaryContainer`/`onTertiaryContainer`/`onErrorContainer` theme tokens so no other Paper component (segmented buttons, tonal buttons, etc.) can fall back to an off-brand color like that again.
+
 ## Project structure
 
 ```

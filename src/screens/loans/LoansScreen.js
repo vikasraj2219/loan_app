@@ -149,7 +149,7 @@ export default function LoansScreen({ navigation }) {
         />
       )}
 
-      <FAB icon="cash-plus" style={styles.fab} onPress={() => navigation.navigate('LoanForm')} label="New Loan" />
+      <FAB icon="cash-plus" color="#FFFFFF" style={styles.fab} onPress={() => navigation.navigate('LoanForm')} label="New Loan" />
     </View>
   );
 }

@@ -40,7 +40,7 @@ export default function LoginScreen({ navigation }) {
       <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
         <View style={styles.header}>
           <Text variant="headlineMedium" style={styles.title}>
-            Loan Manager
+            Waghmare Vikas
           </Text>
           <Text variant="bodyMedium" style={styles.subtitle}>
             Sign in to manage borrowers, loans & payments

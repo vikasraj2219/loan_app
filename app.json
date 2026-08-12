@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Loan Manager",
+    "name": "Waghmare Vikas",
     "slug": "loan-management-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -9,14 +9,14 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#1E3A5F"
+      "backgroundColor": "#12153A"
     },
     "assetBundlePatterns": ["**/*"],
     "android": {
       "package": "com.loanmanager.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#1E3A5F"
+        "backgroundColor": "#12153A"
       },
       "permissions": ["CAMERA", "READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"]
     },

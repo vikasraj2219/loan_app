@@ -126,7 +126,7 @@ export default function BorrowersScreen({ navigation }) {
         />
       )}
 
-      <FAB icon="account-plus-outline" style={styles.fab} onPress={() => navigation.navigate('BorrowerForm')} label="Add" />
+      <FAB icon="account-plus-outline" color="#FFFFFF" style={styles.fab} onPress={() => navigation.navigate('BorrowerForm')} label="Add" />
     </View>
   );
 }
