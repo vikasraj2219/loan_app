@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Image } from 'react-native';
 import { TextInput, Button, Text, HelperText } from 'react-native-paper';
 import { useAuth } from '../../context/AuthContext';
+import { colors, radius, shadow, typography, spacing } from '../../theme/tokens';
 
 export default function RegisterScreen({ navigation }) {
   const { register } = useAuth();
@@ -37,12 +38,11 @@ export default function RegisterScreen({ navigation }) {
     <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
         <View style={styles.header}>
-          <Text variant="headlineMedium" style={styles.title}>
-            Create Account
-          </Text>
-          <Text variant="bodyMedium" style={styles.subtitle}>
-            Note: the very first account registered becomes admin
-          </Text>
+          <View style={styles.logoWrap}>
+            <Image source={require('../../../assets/icon.png')} style={styles.logo} resizeMode="contain" />
+          </View>
+          <Text style={styles.title}>Create Account</Text>
+          <Text style={styles.subtitle}>Note: the very first account registered becomes admin</Text>
         </View>
 
         <TextInput label="Full Name" value={name} onChangeText={setName} mode="outlined" style={styles.input} />
@@ -82,12 +82,23 @@ export default function RegisterScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  flex: { flex: 1 },
-  container: { flexGrow: 1, justifyContent: 'center', padding: 24 },
-  header: { marginBottom: 32, alignItems: 'center' },
-  title: { fontWeight: '700', color: '#4338CA' },
-  subtitle: { marginTop: 4, color: '#6B7280', textAlign: 'center' },
-  input: { marginBottom: 12 },
-  button: { marginTop: 8, paddingVertical: 4 },
-  linkButton: { marginTop: 8 },
+  flex: { flex: 1, backgroundColor: colors.background },
+  container: { flexGrow: 1, justifyContent: 'center', padding: spacing.xxl },
+  header: { marginBottom: spacing.xxxl, alignItems: 'center' },
+  logoWrap: {
+    width: 80,
+    height: 80,
+    borderRadius: radius.lg,
+    backgroundColor: colors.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.lg,
+    ...shadow.md,
+  },
+  logo: { width: 54, height: 54 },
+  title: { ...typography.h1, color: colors.ink },
+  subtitle: { ...typography.body, color: colors.inkMuted, textAlign: 'center', marginTop: spacing.sm },
+  input: { marginBottom: spacing.md, backgroundColor: colors.surface },
+  button: { marginTop: spacing.sm, paddingVertical: 4 },
+  linkButton: { marginTop: spacing.sm },
 });

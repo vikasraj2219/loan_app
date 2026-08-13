@@ -1,12 +1,13 @@
 import { useCallback, useState } from 'react';
 import { View, StyleSheet, ScrollView, RefreshControl, Image, Linking, Share } from 'react-native';
-import { Text, ActivityIndicator, Menu, IconButton, Button, Dialog, Portal } from 'react-native-paper';
+import { Text, ActivityIndicator, Menu, IconButton, Button } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { paymentApi } from '../../api/paymentApi';
 import { useAuth } from '../../context/AuthContext';
 import ErrorState from '../../components/ErrorState';
+import ConfirmDialog from '../../components/ConfirmDialog';
 import { formatCurrency, formatDateTime } from '../../utils/format';
 import { getErrorMessage } from '../../utils/errors';
 import { colors, radius, shadow, typography, spacing } from '../../theme/tokens';
@@ -225,20 +226,17 @@ export default function PaymentDetailsScreen({ route, navigation }) {
         </View>
       </ScrollView>
 
-      <Portal>
-        <Dialog visible={deleteDialogVisible} onDismiss={() => setDeleteDialogVisible(false)}>
-          <Dialog.Title>Delete Payment</Dialog.Title>
-          <Dialog.Content>
-            <Text>This permanently reverses this payment's effect on the loan balance and interest ledger. This cannot be undone.</Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => setDeleteDialogVisible(false)}>Cancel</Button>
-            <Button onPress={handleDelete} loading={deleting} disabled={deleting} textColor={colors.coral}>
-              Delete
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
+      <ConfirmDialog
+        visible={deleteDialogVisible}
+        onDismiss={() => setDeleteDialogVisible(false)}
+        icon="delete-outline"
+        tone="coral"
+        title="Delete Payment"
+        message="This permanently reverses this payment's effect on the loan balance and interest ledger. This cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={handleDelete}
+        loading={deleting}
+      />
     </View>
   );
 }

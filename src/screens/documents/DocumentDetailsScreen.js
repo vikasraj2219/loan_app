@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { View, StyleSheet, ScrollView, Image, Linking } from 'react-native';
-import { Text, Card, Menu, IconButton, Button, Dialog, Portal, Chip } from 'react-native-paper';
+import { Text, Card, Menu, IconButton, Button, Chip } from 'react-native-paper';
 import { useAuth } from '../../context/AuthContext';
 import { documentApi } from '../../api/documentApi';
+import ConfirmDialog from '../../components/ConfirmDialog';
 import { formatDate, formatNumber } from '../../utils/format';
 import { getErrorMessage } from '../../utils/errors';
 
@@ -157,20 +158,17 @@ export default function DocumentDetailsScreen({ route, navigation }) {
         )}
       </ScrollView>
 
-      <Portal>
-        <Dialog visible={deleteDialogVisible} onDismiss={() => setDeleteDialogVisible(false)}>
-          <Dialog.Title>Delete Permanently</Dialog.Title>
-          <Dialog.Content>
-            <Text variant="bodyMedium">This removes the file and its record forever. This cannot be undone.</Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => setDeleteDialogVisible(false)}>Cancel</Button>
-            <Button onPress={() => handleDelete(true)} loading={busy} disabled={busy} textColor="#DC2626">
-              Delete
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
+      <ConfirmDialog
+        visible={deleteDialogVisible}
+        onDismiss={() => setDeleteDialogVisible(false)}
+        icon="delete-outline"
+        tone="coral"
+        title="Delete Permanently"
+        message="This removes the file and its record forever. This cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={() => handleDelete(true)}
+        loading={busy}
+      />
     </View>
   );
 }

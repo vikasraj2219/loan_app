@@ -117,6 +117,15 @@ The build runs on Expo's servers (free tier: a limited number of builds/month). 
 
 ## Fix — Branding, Delete Loan, Button Visibility
 
+**Logo background is now pure white** (it was a faint off-white paper texture before, matching the original artwork's canvas). App icon, adaptive icon, splash screen, and favicon regenerated. The logo now also appears on the **Login screen**, **Register screen**, and the app's loading splash — previously only the wordmark text showed.
+
+**Confirmation popups redesigned.** Every "are you sure?" moment in the app now shares one consistent, purpose-built look (`ConfirmDialog`) instead of the plain default dialog style — a tinted icon circle (coral for destructive, amber for reversible, indigo for informational), clear title/message, and side-by-side buttons colored to match the action's severity. Replaced on:
+- Delete Payment (both places — Payment Detail and the Loan Detail timeline)
+- Delete Interest Record, and the "Interest Generated" result popup
+- Delete Document
+- **Delete Loan** — kept its type-DELETE-to-confirm requirement, now in the new style
+- **Deactivate Borrower** — this previously had **no confirmation at all**, it fired the moment you tapped the menu item. Found and fixed while doing this pass.
+
 **Logo & branding.** App icon, Android adaptive icon, splash screen, and web favicon are now generated from your uploaded Waghmare Vikas logo (the circular monogram, cropped from the full lockup). App name changed from "Loan Manager" to "Waghmare Vikas" throughout — splash screen, login screen, `app.json`.
 
 **Delete Loan — real backend change, needs your action.** Your backend had no delete endpoint for loans at all (by design — it uses `close` to preserve the audit trail). Since you confirmed you want a genuine permanent-delete feature, I added:

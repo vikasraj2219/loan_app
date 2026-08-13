@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { View, StyleSheet, ScrollView, RefreshControl, Pressable } from 'react-native';
-import { Text, ActivityIndicator, Menu, IconButton, Banner, Dialog, Portal, Button, TextInput, Divider } from 'react-native-paper';
+import { Text, ActivityIndicator, Menu, IconButton, Banner, Divider } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { loanApi } from '../../api/loanApi';
@@ -11,6 +11,7 @@ import EmptyState from '../../components/EmptyState';
 import StatusChip from '../../components/StatusChip';
 import RepaymentProgress from '../../components/RepaymentProgress';
 import RepaymentTimeline from '../../components/RepaymentTimeline';
+import ConfirmDialog from '../../components/ConfirmDialog';
 import { formatCurrency, formatDate } from '../../utils/format';
 import { getErrorMessage } from '../../utils/errors';
 import { colors, radius, shadow, typography, spacing } from '../../theme/tokens';
@@ -284,64 +285,35 @@ export default function LoanDetailsScreen({ route, navigation }) {
         </View>
       </ScrollView>
 
-      <Portal>
-        <Dialog visible={!!deletePaymentTarget} onDismiss={() => setDeletePaymentTarget(null)}>
-          <Dialog.Title>Delete Payment</Dialog.Title>
-          <Dialog.Content>
-            <Text>This permanently reverses this payment's effect on the loan balance and interest ledger. This cannot be undone.</Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => setDeletePaymentTarget(null)}>Cancel</Button>
-            <Button onPress={handleDeletePayment} loading={deletingPayment} disabled={deletingPayment} textColor={colors.coral}>
-              Delete
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
+      <ConfirmDialog
+        visible={!!deletePaymentTarget}
+        onDismiss={() => setDeletePaymentTarget(null)}
+        icon="delete-outline"
+        tone="coral"
+        title="Delete Payment"
+        message="This permanently reverses this payment's effect on the loan balance and interest ledger. This cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={handleDeletePayment}
+        loading={deletingPayment}
+      />
 
-        <Dialog
-          visible={deleteLoanDialogVisible}
-          onDismiss={() => {
-            setDeleteLoanDialogVisible(false);
-            setDeleteLoanConfirmText('');
-          }}
-        >
-          <Dialog.Title style={styles.deleteDialogTitle}>Delete Loan Permanently</Dialog.Title>
-          <Dialog.Content>
-            <Text style={styles.deleteDialogText}>
-              This permanently deletes this loan for {loan.borrower?.name}, along with every payment ({payments.length}) and interest
-              record tied to it. This cannot be undone.
-            </Text>
-            <Text style={styles.deleteDialogPrompt}>Type DELETE to confirm:</Text>
-            <TextInput
-              mode="outlined"
-              value={deleteLoanConfirmText}
-              onChangeText={setDeleteLoanConfirmText}
-              autoCapitalize="characters"
-              autoCorrect={false}
-              placeholder="DELETE"
-              style={styles.deleteDialogInput}
-            />
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button
-              onPress={() => {
-                setDeleteLoanDialogVisible(false);
-                setDeleteLoanConfirmText('');
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              onPress={handleDeleteLoan}
-              loading={deletingLoan}
-              disabled={deletingLoan || deleteLoanConfirmText.trim() !== 'DELETE'}
-              textColor={colors.coral}
-            >
-              Delete Forever
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
+      <ConfirmDialog
+        visible={deleteLoanDialogVisible}
+        onDismiss={() => {
+          setDeleteLoanDialogVisible(false);
+          setDeleteLoanConfirmText('');
+        }}
+        icon="delete-forever-outline"
+        tone="coral"
+        title="Delete Loan Permanently"
+        message={`This permanently deletes this loan for ${loan.borrower?.name}, along with every payment (${payments.length}) and interest record tied to it. This cannot be undone.`}
+        confirmLabel="Delete Forever"
+        onConfirm={handleDeleteLoan}
+        loading={deletingLoan}
+        requireText="DELETE"
+        confirmText={deleteLoanConfirmText}
+        onChangeConfirmText={setDeleteLoanConfirmText}
+      />
     </View>
   );
 }
@@ -382,8 +354,4 @@ const styles = StyleSheet.create({
   notesLabel: { ...typography.caption, color: colors.inkFaint, marginBottom: 4 },
   notesText: { ...typography.body, color: colors.ink },
   deleteMenuText: { color: colors.coral },
-  deleteDialogTitle: { color: colors.coral },
-  deleteDialogText: { ...typography.body, color: colors.ink, marginBottom: spacing.md },
-  deleteDialogPrompt: { ...typography.caption, color: colors.inkMuted, marginBottom: 6, fontWeight: '700' },
-  deleteDialogInput: { backgroundColor: colors.surface },
 });

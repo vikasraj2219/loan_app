@@ -1,14 +1,16 @@
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Image } from 'react-native';
 import { ActivityIndicator, Text } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
 import { useAuth } from '../context/AuthContext';
 import AuthNavigator from './AuthNavigator';
 import AppNavigator from './AppNavigator';
+import { colors, typography, spacing } from '../theme/tokens';
 
 function SplashLoading() {
   return (
     <View style={styles.splash}>
-      <ActivityIndicator size="large" color="#4338CA" />
+      <Image source={require('../../assets/icon.png')} style={styles.splashLogo} resizeMode="contain" />
+      <ActivityIndicator size="large" color={colors.indigo} style={styles.splashLoader} />
       <Text style={styles.splashText}>Loading Waghmare Vikas…</Text>
     </View>
   );
@@ -23,6 +25,8 @@ export default function RootNavigator() {
 }
 
 const styles = StyleSheet.create({
-  splash: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F5F7FA' },
-  splashText: { marginTop: 12, color: '#6B7280' },
+  splash: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.white },
+  splashLogo: { width: 96, height: 96, marginBottom: spacing.lg },
+  splashLoader: { marginBottom: spacing.sm },
+  splashText: { ...typography.body, color: colors.inkMuted },
 });

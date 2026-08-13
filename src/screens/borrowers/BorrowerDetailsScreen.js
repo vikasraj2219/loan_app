@@ -11,6 +11,7 @@ import ErrorState from '../../components/ErrorState';
 import EmptyState from '../../components/EmptyState';
 import StatusChip from '../../components/StatusChip';
 import InitialsAvatar from '../../components/InitialsAvatar';
+import ConfirmDialog from '../../components/ConfirmDialog';
 import { formatCurrency, formatDate } from '../../utils/format';
 import { getErrorMessage } from '../../utils/errors';
 import { colors, radius, shadow, typography, spacing } from '../../theme/tokens';
@@ -26,6 +27,8 @@ export default function BorrowerDetailsScreen({ route, navigation }) {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
   const [menuVisible, setMenuVisible] = useState(false);
+  const [deactivateDialogVisible, setDeactivateDialogVisible] = useState(false);
+  const [deactivating, setDeactivating] = useState(false);
 
   const [tab, setTab] = useState('Overview');
   const [payments, setPayments] = useState(null);
@@ -89,12 +92,16 @@ export default function BorrowerDetailsScreen({ route, navigation }) {
   };
 
   const handleDeactivate = async () => {
-    setMenuVisible(false);
+    setDeactivating(true);
     try {
       await borrowerApi.remove(id);
+      setDeactivateDialogVisible(false);
       loadBorrower();
     } catch (err) {
+      setDeactivateDialogVisible(false);
       setError(getErrorMessage(err, 'Could not deactivate borrower.'));
+    } finally {
+      setDeactivating(false);
     }
   };
 
@@ -144,7 +151,14 @@ export default function BorrowerDetailsScreen({ route, navigation }) {
                 }}
               />
               {isAdmin && borrower.status === 'active' && (
-                <Menu.Item leadingIcon="account-off-outline" title="Deactivate" onPress={handleDeactivate} />
+                <Menu.Item
+                  leadingIcon="account-off-outline"
+                  title="Deactivate"
+                  onPress={() => {
+                    setMenuVisible(false);
+                    setDeactivateDialogVisible(true);
+                  }}
+                />
               )}
             </Menu>
           </View>
@@ -298,6 +312,18 @@ export default function BorrowerDetailsScreen({ route, navigation }) {
           </View>
         )}
       </ScrollView>
+
+      <ConfirmDialog
+        visible={deactivateDialogVisible}
+        onDismiss={() => setDeactivateDialogVisible(false)}
+        icon="account-off-outline"
+        tone="amber"
+        title="Deactivate Borrower"
+        message={`${borrower.name} will be marked inactive. This can be reversed by editing their status later.`}
+        confirmLabel="Deactivate"
+        onConfirm={handleDeactivate}
+        loading={deactivating}
+      />
     </View>
   );
 }

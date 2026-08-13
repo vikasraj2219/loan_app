@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { View, StyleSheet, ScrollView, RefreshControl, Pressable } from 'react-native';
-import { Text, ActivityIndicator, Button, Dialog, Portal, IconButton } from 'react-native-paper';
+import { Text, ActivityIndicator, Button, IconButton } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { loanApi } from '../../api/loanApi';
@@ -9,6 +9,7 @@ import { useAuth } from '../../context/AuthContext';
 import ErrorState from '../../components/ErrorState';
 import EmptyState from '../../components/EmptyState';
 import StatusChip from '../../components/StatusChip';
+import ConfirmDialog from '../../components/ConfirmDialog';
 import { formatCurrency, formatDate } from '../../utils/format';
 import { getErrorMessage } from '../../utils/errors';
 import { colors, radius, shadow, typography, spacing } from '../../theme/tokens';
@@ -200,41 +201,38 @@ export default function InterestScheduleScreen({ route, navigation }) {
         )}
       </ScrollView>
 
-      <Portal>
-        <Dialog visible={!!generateResult} onDismiss={() => setGenerateResult(null)}>
-          <Dialog.Title>Interest Generated</Dialog.Title>
-          <Dialog.Content>
-            {generateResult && (
-              <View>
-                <Text style={styles.dialogRow}>{generateResult.recordsCreated} new record(s) created</Text>
-                <Text style={styles.dialogRow}>{generateResult.duplicatesSkipped} already existed (skipped)</Text>
-                {generateResult.failed > 0 ? (
-                  <Text style={[styles.dialogRow, { color: colors.coral }]}>{generateResult.failed} failed</Text>
-                ) : null}
-              </View>
-            )}
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => setGenerateResult(null)}>OK</Button>
-          </Dialog.Actions>
-        </Dialog>
+      <ConfirmDialog
+        visible={!!generateResult}
+        onDismiss={() => setGenerateResult(null)}
+        icon="check-circle-outline"
+        tone="indigo"
+        title="Interest Generated"
+        message={
+          generateResult
+            ? `${generateResult.recordsCreated} new record(s) created · ${generateResult.duplicatesSkipped} already existed`
+            : ''
+        }
+        detail={generateResult?.failed > 0 ? `${generateResult.failed} failed to generate` : null}
+        confirmLabel="OK"
+        onConfirm={() => setGenerateResult(null)}
+        singleAction
+      />
 
-        <Dialog visible={!!deleteTarget} onDismiss={() => setDeleteTarget(null)}>
-          <Dialog.Title>Delete Record</Dialog.Title>
-          <Dialog.Content>
-            <Text>
-              Delete the {deleteTarget ? `${MONTH_NAMES[deleteTarget.month]} ${deleteTarget.year}` : ''} interest record? This cannot be
-              undone.
-            </Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => setDeleteTarget(null)}>Cancel</Button>
-            <Button onPress={handleDelete} loading={deleting} disabled={deleting} textColor={colors.coral}>
-              Delete
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
+      <ConfirmDialog
+        visible={!!deleteTarget}
+        onDismiss={() => setDeleteTarget(null)}
+        icon="delete-outline"
+        tone="coral"
+        title="Delete Record"
+        message={
+          deleteTarget
+            ? `Delete the ${MONTH_NAMES[deleteTarget.month]} ${deleteTarget.year} interest record? This cannot be undone.`
+            : ''
+        }
+        confirmLabel="Delete"
+        onConfirm={handleDelete}
+        loading={deleting}
+      />
     </View>
   );
 }
@@ -291,5 +289,4 @@ const styles = StyleSheet.create({
   monthBottomRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 },
   monthAmount: { ...typography.h3, color: colors.ink },
   monthDue: { ...typography.caption, color: colors.inkFaint },
-  dialogRow: { ...typography.body, color: colors.ink, marginBottom: 4 },
 });
